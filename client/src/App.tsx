@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import MiniDrawer from './components/Navbar';
 import { Box } from '@mui/material';
 import Chat from './components/Chat/Chat';
+
 // Lazy load components
 const HomeComp = lazy(() => import('./components/Home/HomeComp'));
 const SearchComponent = lazy(() => import('./components/Search/SearchComponent'));
