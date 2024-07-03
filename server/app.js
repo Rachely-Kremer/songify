@@ -23,6 +23,8 @@ const io = socketIo(server, {
 app.use(cors({
     origin: 'http://localhost:3000'
 }));
+app.use(bodyParser.json());
+
 
 app.use('/api', usersRouter);
 app.use('/api', songsRouter);
@@ -35,7 +37,6 @@ mongoose.connect(CONECTION_URL, { useNewUrlParser: true, useUnifiedTopology: tru
     () => server.listen(PORT, () => console.log(`server runing on port ${PORT}`)))
     .catch((error) => console.log(error.message));
 
-app.use(bodyParser.json());
 
 chatHandler(io);
 
