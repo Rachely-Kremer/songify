@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import MiniDrawer from './components/Navbar';
 import { Box } from '@mui/material';
+import MusicComp from './components/Music/MusicComp';
 
 function App() {
   return (
@@ -9,6 +10,7 @@ function App() {
       <MiniDrawer />
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Suspense fallback={<div>Loading...</div>}>
+        <MusicComp />
           {/* <Chat /> */}
           <Routes>
             {/* <Route path="/" element={<HomeComp />} />
