@@ -1,82 +1,50 @@
-import { timeStamp } from 'console';
 import React, { useEffect, useState } from 'react';
 import io from 'socket.io-client';
+import './Chat.css';
 
 const socket = io('http://localhost:5000');
 
-interface Message {
-  text: string;
-  timestamp: number;
-}
-
-function Chat() {
+const Chat: React.FC = () => {
   const [messageInput, setMessageInput] = useState<string>('');
-  const [messages, setMessages] = useState<{ text: string, timestamp: number }[]>([]);
+  const [messages, setMessages] = useState<string[]>([]);
 
   useEffect(() => {
-    socket.on('connect', () => {
-      console.log('connected to server');
+    socket.on('chat message', (msg: string) => {
+      setMessages((prevMessages) => [...prevMessages, msg]);
     });
-
-    socket.on('message', (msg: { text: string, timestamp: number }) => {
-      setMessages(preMessages => [...preMessages, msg]);
-    });
-
 
     return () => {
-      socket.off('connect');
-      socket.off('message');
-
+      socket.off('chat message');
     };
-
   }, []);
 
-
-  const sendMessage = () => {
-    const message = {
-      text: messageInput,
-      timeStamp: Date.now()
-    };
-    socket.emit('send-message', message);
-    setMessageInput('');
+  const sendMessage = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (messageInput.trim()) {
+      console.log('Sending message: ', messageInput); // הוסף לוג כאן
+      socket.emit('chat message', messageInput);
+      setMessageInput('');
+    }
   };
+
   return (
-    <div className="flex justify-center items-center w-full h-screen bg-gradient-to-b from-blue-300 to-blue-700">
-      <div className="bg-white rounded-lg w-96 h-96 p-4 shadow-md">
-        <div className="flex flex-col h-full">
-          <div className="flex-1 p-2 overflow-y-auto bg-gray-100 rounded-md">
-            {messages.map((msg: Message, index: number) => (
-              <div key={index} className="flex flex-col items-start">
-                <div className="bg-blue-500 text-white p-2 rounded-md">
-                  {msg.text}
-                </div>
-                <span className="text-gray-500 text-xs">
-                  {new Date(msg.timestamp).toLocaleTimeString()}
-                </span>
-              </div>
-            ))}
-          </div>
-          <div className="p-2 border-t border-gray-300">
-            <div className="flex">
-              <input
-                type="text"
-                className="w-full px-2 py-1 border rounded-l-md outline-none"
-                placeholder="Type your message..."
-                value={messageInput}
-                onChange={(e) => setMessageInput(e.target.value)}
-              />
-              <button
-                className="px-4 py-2 bg-blue-500 text-white rounded-r-md hover:bg-blue-600"
-                onClick={sendMessage}
-              >
-                Send
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div>
+      <ul id="messages">
+        {messages.map((msg, index) => (
+          <li key={index}>{msg}</li>
+        ))}
+      </ul>
+      <form id="form" onSubmit={sendMessage}>
+        <input
+          id="input"
+          autoComplete="off"
+          value={messageInput}
+          onChange={(e) => setMessageInput(e.target.value)}
+        />
+        <button>Send</button>
+      </form>
     </div>
   );
-}
+};
 
 export default Chat;

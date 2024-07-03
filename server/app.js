@@ -1,33 +1,32 @@
 const express = require('express');
-const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
-const { Server } = require('socket.io');
 const http = require('http');
-
+const socketIo = require('socket.io');
+const path = require('path');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const cors = require('cors');
 
 const usersRouter = require('./src/routes/users');
 const songsRouter = require('./src/routes/songs');
 const playListsRouter = require('./src/routes/playLists');
 const chatHandler = require('./src/sockets/chat');
 
-
-
-
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, {
+const io = socketIo(server, {
     cors: {
-        origin: "*",
-        credentials: true,
-    },
+        origin: 'http://localhost:3000',
+        methods: ['GET', 'POST']
+    }
 });
 
+app.use(cors({
+    origin: 'http://localhost:3000'
+}));
 
 app.use('/api', usersRouter);
 app.use('/api', songsRouter);
 app.use('/api', playListsRouter);
-
-
 
 const CONECTION_URL = 'mongodb+srv://rachely-shulamit:HfaIUExXUCLK8qna@songify.1d3fhhe.mongodb.net/Songify?retryWrites=true&w=majority&appName=Songify';
 const PORT = process.env.PORT || 5000;
@@ -38,9 +37,6 @@ mongoose.connect(CONECTION_URL, { useNewUrlParser: true, useUnifiedTopology: tru
 
 app.use(bodyParser.json());
 
-app.get('/', (req, res) => {
-    res.send('Hello World!');
-});
-
-
 chatHandler(io);
+
+module.exports = server;
