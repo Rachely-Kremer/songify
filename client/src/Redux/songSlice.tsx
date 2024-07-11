@@ -35,6 +35,24 @@ export const fetchSongs = createAsyncThunk('songs/fetchSongs', async (_, thunkAP
     }
 });
 
+export const updateView = async (songId: string) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/song/updateView/${songId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      console.log(`Views updated for song ${songId}`);
+    } catch (error) {
+      console.error('Error updating views:', error);
+    }
+  };
+
 const songSlice = createSlice({
     name: 'songs',
     initialState,

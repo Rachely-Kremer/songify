@@ -76,8 +76,24 @@ exports.searchSongs = async (req, res) => {
     const songs = await Song.find({
       songName: { $regex: query, $options: 'i' },
     });
+
     res.json(songs);
   } catch (error) {
     res.status(500).json({ error: 'Error fetching search results' });
   }
 };
+
+exports.updateView = async (req, res) => {
+  try {
+    const songId = req.params.id;
+    const song = await Song.findById(songId);
+    if (!song) {
+      return res.status(404).json({ message: 'Song not found' });
+    }
+    song.views += 1;
+    await song.save();
+    res.json({ message: 'Views updated successfully', song });
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating views', error });
+  }
+}
