@@ -1,8 +1,9 @@
-import { useState, ChangeEvent, KeyboardEvent, useCallback } from 'react';
+import React, { useState, useEffect, ChangeEvent, KeyboardEvent, useCallback } from 'react';
 import { styled } from '@mui/material/styles';
 import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
 import { Song } from '../../Types/song.type';
+import { updateView } from '../../Redux/songSlice';
 
 
 const Search = styled('div')(({ theme }) => ({
@@ -46,15 +47,26 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-export default function SearchComponent() {
+const SearchComponent: React.FC = () => {
   const [searchResults, setSearchResults] = useState<Song[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [searched, setSearched] = useState<boolean>(false); // State to track if search has been performed
+  const [initialLoad, setInitialLoad] = useState<boolean>(true); // State to track initial load
 
+  
   const handleInputChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
+    setSearched(false); // Reset searched state when input changes
+    setInitialLoad(false); // Update initialLoad when input changes
   }, []);
 
+
   const handleSearch = useCallback(async () => {
+    if (searchQuery.trim() === '') {
+      setSearchResults([]);
+      setSearched(false);
+      return;
+    }
     try {
       const response = await fetch(`http://localhost:5000/api/search?query=${searchQuery}`, {
         headers: {
@@ -68,11 +80,22 @@ export default function SearchComponent() {
 
       const data: Song[] = await response.json();
       setSearchResults(data);
+      setSearched(true); // Update state to indicate search has been performed
       console.log('Searching for:', searchQuery);
     } catch (error) {
       console.error('Error fetching search results:', error);
     }
+
   }, [searchQuery]);
+
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      handleSearch();
+    }, 500); // Adjust the delay (in milliseconds) as needed
+
+    return () => clearTimeout(timer);
+  }, [searchQuery, handleSearch]);
 
 
   const handleKeyPress = useCallback((event: KeyboardEvent<HTMLInputElement>) => {
@@ -96,14 +119,18 @@ export default function SearchComponent() {
         />
       </Search>
       <div>
-        {searchResults.map((song) => (
+        {searched && searchResults.length === 0 && (
+          <p>No results found for "{searchQuery}". Try searching within quotes.</p>
+        )}
+        {searched && searchResults.map((song) => (
           <div key={song._id}>
             <h4>{song.songName}</h4>
             <p>{song.singerName}</p>
             <p>{song.likes} Likes</p>
             <p>{song.views} Views</p>
             <p>{new Date(song.date).toLocaleDateString()}</p>
-            <audio controls src={song.songUrl}></audio>
+            <audio controls src={song.songUrl}
+            onPlay={() => updateView(song._id)}></audio>
             <img src={song.imageUrl} alt={song.songName} style={{ width: '100px', height: '100px' }} />
           </div>
         ))}
@@ -111,3 +138,5 @@ export default function SearchComponent() {
     </div>
   );
 }
+
+export default SearchComponent;
