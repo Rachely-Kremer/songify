@@ -14,6 +14,12 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Dialog } from '@mui/material';
+import { addUser } from '../../Redux/userSlice';
+import { AppDispatch } from '../../Redux/store'; // וודא שהנתיב נכון
+import { useDispatch } from 'react-redux';
+import { User } from '../../Types/user.type';
+
+
 
 function Copyright(props: any) {
     return (
@@ -31,17 +37,9 @@ function Copyright(props: any) {
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
-const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-        email: data.get('email'),
-        password: data.get('password'),
-    });
-};
-
 export default function SignUp() {
     const [open, setOpen] = React.useState(false);
+    const dispatch = useDispatch<AppDispatch>();
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -50,6 +48,21 @@ export default function SignUp() {
     const handleClose = () => {
         setOpen(false);
     };
+    
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        const newUser: User = {
+            id: 0, // Temporary id, will be replaced by the server
+            firstName: data.get('firstName') as string,
+            lastName: data.get('lastName') as string,
+            email: data.get('email') as string,
+            password: data.get('password') as string,
+        };
+        dispatch(addUser(newUser));
+        handleClose();
+    };
+    
 
 
     return (
