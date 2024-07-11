@@ -1,5 +1,6 @@
-const { string } = require('i/lib/util');
-const { Schema, model } = require('mongoose');
+const mongoose = require('mongoose');
+const { Schema, model } = mongoose;
+
 
 const songSchema = new Schema({
   songName: { type: String, required: true },

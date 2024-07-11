@@ -4,8 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import 'react-h5-audio-player/lib/styles.css';
 import { fetchSongs } from '../../Redux/songSlice';
 import { RootState, AppDispatch } from '../../Redux/store'
-
-// import './styles.css';
+import './styles.css';
 
 // const songs = [
 //   { title: 'Song 1', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
@@ -35,8 +34,7 @@ const SongComp = () => {
   };
 
   return (
-    <div style={{ textAlign: 'center' }}>
-      <h2>נגן מוזיקה</h2>
+    <div className="song-container">
       {songStatus === 'loading' ? (
         < p > Loading songs...</p>
       ) : songStatus === 'succeeded' ? (

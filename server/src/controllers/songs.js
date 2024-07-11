@@ -1,3 +1,4 @@
+// controllers/songs.js
 const Song = require('../models/song');
 
 // Create a new song
@@ -65,5 +66,18 @@ exports.deleteSong = async (req, res) => {
     res.status(200).json({ message: 'Song deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+};
+
+// פונקציה לחיפוש שירים
+exports.searchSongs = async (req, res) => {
+  try {
+    const query = req.query.query;
+    const songs = await Song.find({
+      songName: { $regex: query, $options: 'i' },
+    });
+    res.json(songs);
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching search results' });
   }
 };
