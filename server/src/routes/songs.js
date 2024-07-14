@@ -21,4 +21,7 @@ router.delete('/song/:id', songController.deleteSong);
 router.get('/search', songController.searchSongs);
 
 router.put('/song/updateView/:id', songController.updateView);
+
+router.get('/songs/popularSongs', songController.popularSongs)
+
 module.exports = router;
