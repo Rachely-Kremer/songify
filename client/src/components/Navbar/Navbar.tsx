@@ -5,13 +5,9 @@ import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import MuiDrawer from '@mui/material/Drawer';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
-import CssBaseline from '@mui/material/CssBaseline';
-import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ListItem from '@mui/material/ListItem';
@@ -23,12 +19,17 @@ import QueueMusicOutlinedIcon from '@mui/icons-material/QueueMusicOutlined';
 import HomeIcon from '@mui/icons-material/Home';
 import QueueMusicIcon from '@mui/icons-material/QueueMusic';
 import { RiSearchLine, RiSearchFill } from 'react-icons/ri';
-import SearchComponent from './Search/SearchComponent';
-import HomeComp from './Home/HomeComp';
-import PlaylistComp from './Playlist/PlaylistComp';
+import SearchComponent from '../Search/SearchComponent';
+import Popular from '../Popular';
+import LocalFireDepartmentOutlinedIcon from '@mui/icons-material/LocalFireDepartmentOutlined';
+import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
+
+
+import HomeComp from '../Home/HomeComp';
+import PlaylistComp from '../Playlist/PlaylistComp';
 import ChatIcon from '@mui/icons-material/Chat';
 import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
-import ChatComp from './Chat/Chat';
+import ChatComp from '../Chat/Chat';
 
 const drawerWidth = 240;
 
@@ -111,6 +112,7 @@ type IconsStateType = {
   Search: IconState;
   Playlist: IconState;
   GameChat: IconState;
+  Popular: IconState;
 };
 
 type IconName = keyof IconsStateType;
@@ -119,6 +121,8 @@ const HomeComponent = React.memo(HomeComp);
 const SearchComponentMemo = React.memo(SearchComponent);
 const PlaylistComponentMemo = React.memo(PlaylistComp);
 const GameChatComponentMemo = React.memo(ChatComp);
+const PopularComponentMemo = React.memo(Popular);
+
 
 export default function MiniDrawer() {
   const theme = useTheme();
@@ -131,6 +135,8 @@ export default function MiniDrawer() {
     Search: { icon: <RiSearchLine />, activeIcon: <RiSearchFill />, isActive: false },
     Playlist: { icon: <QueueMusicOutlinedIcon />, activeIcon: <QueueMusicIcon />, isActive: false },
     GameChat: { icon: <ChatOutlinedIcon />, activeIcon: <ChatIcon />, isActive: false },
+    Popular: { icon: <LocalFireDepartmentOutlinedIcon />, activeIcon: <LocalFireDepartmentIcon />, isActive: false },
+
   });
 
   const handleDrawerToggle = () => {
@@ -207,6 +213,7 @@ export default function MiniDrawer() {
         {currentComponent === 'Search' && <SearchComponentMemo />}
         {currentComponent === 'Playlist' && <PlaylistComponentMemo />}
         {currentComponent === 'GameChat' && <GameChatComponentMemo />}
+        {currentComponent === 'Popular' && <PopularComponentMemo />}
       </Box>
     </Box>
   );

@@ -97,3 +97,12 @@ exports.updateView = async (req, res) => {
     res.status(500).json({ message: 'Error updating views', error });
   }
 }
+
+exports.popularSongs = async (req, res) => {
+  try {
+    const popularSongs = await Song.find().sort({ views: -1 }).limit(4);
+    res.status(200).json(popularSongs)
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

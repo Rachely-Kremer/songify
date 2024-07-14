@@ -1,6 +1,6 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import MiniDrawer from './components/Navbar';
+import MiniDrawer from './components/Navbar/Navbar';
 import { Box } from '@mui/material';
 import SignIn from './components/SignIn/SignIn';
 import SignUp from './components/SignUp/SignUp';

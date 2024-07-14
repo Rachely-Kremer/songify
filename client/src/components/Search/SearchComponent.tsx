@@ -56,8 +56,8 @@ const SearchComponent: React.FC = () => {
   
   const handleInputChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
-    setSearched(false); // Reset searched state when input changes
-    setInitialLoad(false); // Update initialLoad when input changes
+    setSearched(false); 
+    setInitialLoad(false); 
   }, []);
 
 
