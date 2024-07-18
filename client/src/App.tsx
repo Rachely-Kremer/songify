@@ -1,6 +1,6 @@
 import React, { Suspense, useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import MiniDrawer from './components/Navbar';
+import MiniDrawer from './components/Navbar/Navbar';
 import { AppBar, Box, Toolbar } from '@mui/material';
 import Login from './components/Login/Login';
 import store from './Redux/store';

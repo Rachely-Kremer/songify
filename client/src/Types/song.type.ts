@@ -1,4 +1,5 @@
 export interface Song {
+    _id: string; // Mongoose ID
     songName: string;
     inPlayList: boolean;
     singerName: string;

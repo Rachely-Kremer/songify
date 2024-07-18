@@ -4,14 +4,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import 'react-h5-audio-player/lib/styles.css';
 import { fetchSongs } from '../../Redux/songSlice';
 import { RootState, AppDispatch } from '../../Redux/store'
-
-// import './styles.css';
-
-// const songs = [
-//   { title: 'Song 1', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
-//   { title: 'Song 2', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' },
-//   { title: 'Song 3', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' },
-// ];
+import './styles.css';
+import { updateView } from '../../Redux/songSlice';
 
 
 const SongComp = () => {
@@ -34,9 +28,11 @@ const SongComp = () => {
     setCurrentSongIndex((prevIndex) => (prevIndex - 1 + songs.length) % songs.length);
   };
 
+
+
+
   return (
-    <div style={{ textAlign: 'center' }}>
-      <h2>נגן מוזיקה</h2>
+    <div className="song-container">
       {songStatus === 'loading' ? (
         < p > Loading songs...</p>
       ) : songStatus === 'succeeded' ? (
@@ -44,7 +40,7 @@ const SongComp = () => {
           <h4>{songs[currentSongIndex].songName}</h4>
           <AudioPlayer
             src={songs[currentSongIndex].songUrl}
-            onPlay={() => console.log('Playing')}
+            onPlay={() => updateView(songs[currentSongIndex]._id)}
             onClickPrevious={handleClickPrevious}
             onClickNext={handleClickNext}
             showSkipControls={true}
