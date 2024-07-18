@@ -3,8 +3,7 @@ import { styled } from '@mui/material/styles';
 import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
 import { Song } from '../../Types/song.type';
-import { updateView } from '../../Redux/songSlice';
-
+import DrawSong from '../Song/DrawSong';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -53,11 +52,11 @@ const SearchComponent: React.FC = () => {
   const [searched, setSearched] = useState<boolean>(false); // State to track if search has been performed
   const [initialLoad, setInitialLoad] = useState<boolean>(true); // State to track initial load
 
-  
+
   const handleInputChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
-    setSearched(false); 
-    setInitialLoad(false); 
+    setSearched(false);
+    setInitialLoad(false);
   }, []);
 
 
@@ -122,18 +121,7 @@ const SearchComponent: React.FC = () => {
         {searched && searchResults.length === 0 && (
           <p>No results found for "{searchQuery}". Try searching within quotes.</p>
         )}
-        {searched && searchResults.map((song) => (
-          <div key={song._id}>
-            <h4>{song.songName}</h4>
-            <p>{song.singerName}</p>
-            <p>{song.likes} Likes</p>
-            <p>{song.views} Views</p>
-            <p>{new Date(song.date).toLocaleDateString()}</p>
-            <audio controls src={song.songUrl}
-            onPlay={() => updateView(song._id)}></audio>
-            <img src={song.imageUrl} alt={song.songName} style={{ width: '100px', height: '100px' }} />
-          </div>
-        ))}
+        {searched && <DrawSong songs={searchResults} />}
       </div>
     </div>
   );
