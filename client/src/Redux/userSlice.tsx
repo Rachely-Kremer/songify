@@ -6,99 +6,88 @@ import UsePost from '../Hooks/Post';
 import UsePut from '../Hooks/Put';
 import UseDelete from '../Hooks/Delete';
 import { User } from '../Types/user.type';
+import axios from 'axios';
 
-interface UsersState {
-    users: User[];
+interface AuthState {
+    user: User | null;
     loading: boolean;
     error: string | null;
+    token: string | null;
 }
 
-const initialState: UsersState = {
-    users: [],
+const initialState: AuthState = {
+    user: null,
     loading: false,
     error: null,
+    token: null,
 };
 
-export const fetchUsers = createAsyncThunk('users/fetchUsers', async () => {
-    const [httpGet, res] = UseGet();
-    if (httpGet) {
-        await httpGet('https://localhost:7112/api/Users');
-        return res;
-    }
-    throw new Error('httpGet is not defined');
-});
 
-export const addUser = createAsyncThunk('users/addUser', async (newUser: User) => {
-    const httpPost = UsePost();
-    if (httpPost) {
-        await httpPost('https://localhost:7112/api/Users', newUser);
-        return newUser;
+export const signUpUser = createAsyncThunk(
+    'auth/signUpUser',
+    async (newUser: { email: string; password: string }, { rejectWithValue }) => {
+        try {
+            await axios.post('http://localhost:5000/api/signup', newUser);
+            const loginResponse = await axios.post('http://localhost:5000/api/login', newUser);
+            return loginResponse.data;
+        } catch (error: any) {
+            if (error.response && error.response.status === 409) {
+                return rejectWithValue('Email already exists');
+            }
+            return rejectWithValue(error.message);
+        }
     }
-    throw new Error('httpPost is not defined');
-});
+);
 
-export const editUser = createAsyncThunk('users/editUser', async (user: User) => {
-    const httpPut = UsePut();
-    if (httpPut) {
-        await httpPut(`https://localhost:7112/api/Users/${user.id}`, user);
-        return user;
+export const loginUser = createAsyncThunk(
+    'auth/loginUser',
+    async (credentials: { email: string; password: string }, { rejectWithValue }) => {
+        try {
+            const response = await axios.post('http://localhost:5000/api/login', credentials);
+            return response.data;
+        } catch (error: any) {
+            if (error.response) {
+                return rejectWithValue(error.response.data.message);
+            }
+            return rejectWithValue(error.message);
+        }
     }
-    throw new Error('httpPut is not defined');
-});
 
-export const deleteUser = createAsyncThunk('users/deleteUser', async (userId: number) => {
-    const httpDelete = UseDelete();
-    if (httpDelete) {
-        await httpDelete(`https://localhost:7112/api/Users/${userId}`);
-        return userId;
-    }
-    throw new Error('httpDelete is not defined');
-});
+);
 
-const userSlice = createSlice({
-    name: 'users',
+const authSlice = createSlice({
+    name: 'auth',
     initialState,
     reducers: {},
     extraReducers: (builder) => {
         builder
-       
-            .addCase(fetchUsers.pending, (state) => {
+            .addCase(signUpUser.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(fetchUsers.fulfilled, (state, action: PayloadAction<User[]>) => {
+            .addCase(signUpUser.fulfilled, (state, action) => {
                 state.loading = false;
-                state.users = action.payload;
+                state.user = action.payload.user;
+                state.token = action.payload.token;
             })
-            .addCase(fetchUsers.rejected, (state, action) => {
+            .addCase(signUpUser.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.error.message || 'Failed to fetch users';
+                state.error = action.error.message || 'Failed to sign up';
             })
-            .addCase(addUser.fulfilled, (state, action: PayloadAction<User>) => {
-                state.users.push(action.payload);
+            .addCase(loginUser.pending, (state) => {
+                state.loading = true;
+                state.error = null;
             })
-            .addCase(editUser.fulfilled, (state, action: PayloadAction<User>) => {
-                const index = state.users.findIndex((user) => user.id === action.payload.id);
-                if (index !== -1) {
-                    state.users[index] = action.payload;
-                }
+            .addCase(loginUser.fulfilled, (state, action) => {
+                state.loading = false;
+                state.user = action.payload.user;
+                state.token = action.payload.token;
             })
-            .addCase(deleteUser.fulfilled, (state, action: PayloadAction<number>) => {
-                state.users = state.users.filter((user) => user.id !== action.payload);
+            .addCase(loginUser.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || 'Failed to login';
             });
     },
 });
 
-export default userSlice.reducer;
-
-// // Custom hooks to use in components
-// export const useUsers = () => {
-//     const dispatch = useDispatch();
-//     const users = useSelector((state: RootState) => state.users);
-
-//     useEffect(() => {
-//         dispatch(fetchUsers());
-//     }, [dispatch]);
-
-//     return users;
-// };
+export default authSlice.reducer;

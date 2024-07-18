@@ -4,7 +4,8 @@ const UsePost = () => {
     const post = async (url:string, data:any) => {
         try {
             console.log(data);
-            await axios.post(url, data); 
+            const response = await axios.post(url, data);
+            return response.data; // מחזיר את התגובה מהשרת
         }
         catch (error) {
             console.error(error);
