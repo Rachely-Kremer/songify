@@ -1,79 +1,90 @@
-
-import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { Dialog } from '@mui/material';
-import { addUser } from '../../Redux/userSlice';
-import { AppDispatch } from '../../Redux/store'; // וודא שהנתיב נכון
+import React, { useState } from 'react';
+import {
+    Avatar, Button, CssBaseline, TextField,
+    FormControlLabel, Checkbox, Link, Grid, Box,
+    Typography, Container,
+    createTheme, ThemeProvider, Dialog,
+    InputAdornment,
+    IconButton
+} from '@mui/material';
 import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../Redux/store';
+import { signUpUser } from '../../Redux/userSlice';
 import { User } from '../../Types/user.type';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { Link as RouterLink } from 'react-router-dom'; // ייבאי את ה-Link מה־react-router-dom
 
 
-
-function Copyright(props: any) {
-    return (
-        <Typography variant="body2" color="text.secondary" align="center" {...props}>
-            {'Copyright © '}
-            <Link color="inherit" href="https://mui.com/">
-                Your Website
-            </Link>{' '}
-            {new Date().getFullYear()}
-            {'.'}
-        </Typography>
-    );
-}
-
-// TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
-export default function SignUp() {
-    const [open, setOpen] = React.useState(false);
+interface SignUpProps {
+    onOpenLogin: () => void;
+    openDialog: 'login' | 'signup' | null;
+    onCloseDialog: () => void;
+    onSignUpSuccess: () => void; 
+
+}
+
+const SignUp: React.FC<SignUpProps> = ({ onOpenLogin, openDialog, onCloseDialog, onSignUpSuccess }) => {
+    const [errors, setErrors] = useState<{ [key: string]: string }>({});
+    const [generalError, setGeneralError] = useState<string | null>(null);
+    const [showPassword, setShowPassword] = useState(false);
     const dispatch = useDispatch<AppDispatch>();
 
-    const handleClickOpen = () => {
-        setOpen(true);
+    const validate = (data: { [key: string]: string }) => {
+        const newErrors: { [key: string]: string } = {};
+
+        if (!data.firstName) newErrors.firstName = 'First Name is required';
+        if (!data.lastName) newErrors.lastName = 'Last Name is required';
+        if (!data.email) newErrors.email = 'Email is required';
+        if (!data.password) newErrors.password = 'Password is required';
+
+        return newErrors;
     };
 
-    const handleClose = () => {
-        setOpen(false);
-    };
-    
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
         const newUser: User = {
-            id: 0, // Temporary id, will be replaced by the server
+            id: 0,
             firstName: data.get('firstName') as string,
             lastName: data.get('lastName') as string,
             email: data.get('email') as string,
             password: data.get('password') as string,
         };
-        dispatch(addUser(newUser));
-        handleClose();
-    };
-    
 
+        const newErrors = validate({
+            firstName: newUser.firstName,
+            lastName: newUser.lastName,
+            email: newUser.email,
+            password: newUser.password,
+        });
+
+        if (Object.keys(newErrors).length === 0) {
+            try {
+                const resultAction = await dispatch(signUpUser(newUser));
+                if (signUpUser.rejected.match(resultAction) && resultAction.payload === 'Email already exists') {
+                    setErrors({ email: 'Email already exists' });
+                    setGeneralError('Email already exists in our system. Please login.');
+                } else {
+                    onSignUpSuccess();
+                    onCloseDialog();
+                }
+            } catch (error) {
+                setGeneralError('An error occurred during sign up. Please try again later.');
+            }
+        } else {
+            setErrors(newErrors);
+        }
+    };
+
+    const handleClickShowPassword = () => {
+        setShowPassword(!showPassword);
+    };
 
     return (
         <React.Fragment>
-            <Button variant="outlined" onClick={handleClickOpen}>
-                sign up
-            </Button>
-            <Dialog
-                open={open}
-                onClose={handleClose}
-            >
+            <Dialog open={openDialog === 'signup'} onClose={onCloseDialog}>
                 <ThemeProvider theme={defaultTheme}>
                     <Container component="main" maxWidth="xs">
                         <CssBaseline />
@@ -86,10 +97,10 @@ export default function SignUp() {
                             }}
                         >
                             <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                                <LockOutlinedIcon />
+                                {/* <LockOutlinedIcon /> */}
                             </Avatar>
                             <Typography component="h1" variant="h5">
-                                Sign up
+                                Sign Up
                             </Typography>
                             <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
                                 <Grid container spacing={2}>
@@ -102,6 +113,8 @@ export default function SignUp() {
                                             id="firstName"
                                             label="First Name"
                                             autoFocus
+                                            error={!!errors.firstName}
+                                            helperText={errors.firstName}
                                         />
                                     </Grid>
                                     <Grid item xs={12} sm={6}>
@@ -112,6 +125,8 @@ export default function SignUp() {
                                             label="Last Name"
                                             name="lastName"
                                             autoComplete="family-name"
+                                            error={!!errors.lastName}
+                                            helperText={errors.lastName}
                                         />
                                     </Grid>
                                     <Grid item xs={12}>
@@ -122,6 +137,8 @@ export default function SignUp() {
                                             label="Email Address"
                                             name="email"
                                             autoComplete="email"
+                                            error={!!errors.email}
+                                            helperText={errors.email}
                                         />
                                     </Grid>
                                     <Grid item xs={12}>
@@ -130,9 +147,24 @@ export default function SignUp() {
                                             fullWidth
                                             name="password"
                                             label="Password"
-                                            type="password"
+                                            type={showPassword ? 'text' : 'password'}
                                             id="password"
                                             autoComplete="new-password"
+                                            error={!!errors.password}
+                                            helperText={errors.password}
+                                            InputProps={{
+                                                endAdornment: (
+                                                    <InputAdornment position="end">
+                                                        <IconButton
+                                                            aria-label="toggle password visibility"
+                                                            onClick={handleClickShowPassword}
+                                                            edge="end"
+                                                        >
+                                                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                        </IconButton>
+                                                    </InputAdornment>
+                                                ),
+                                            }}
                                         />
                                     </Grid>
                                     <Grid item xs={12}>
@@ -142,6 +174,11 @@ export default function SignUp() {
                                         />
                                     </Grid>
                                 </Grid>
+                                {generalError && (
+                                    <Typography color="error" align="center">
+                                        {generalError}
+                                    </Typography>
+                                )}
                                 <Button
                                     type="submit"
                                     fullWidth
@@ -152,17 +189,20 @@ export default function SignUp() {
                                 </Button>
                                 <Grid container justifyContent="flex-end">
                                     <Grid item>
-                                        <Link href="#" variant="body2">
-                                            Already have an account? Sign in
-                                        </Link>
+                                        <Typography variant="body2">
+                                            <RouterLink to="/login" onClick={onOpenLogin}>
+                                                Already have an account? Login
+                                            </RouterLink>
+                                        </Typography>
                                     </Grid>
                                 </Grid>
                             </Box>
                         </Box>
-                        <Copyright sx={{ mt: 5 }} />
                     </Container>
                 </ThemeProvider>
             </Dialog>
-        </React.Fragment >
+        </React.Fragment>
     );
 }
+
+export default SignUp;
