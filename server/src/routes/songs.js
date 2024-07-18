@@ -12,7 +12,7 @@ router.get('/songs', songController.getAllSongs);
 router.get('/song/:id', songController.getSongById);
 
 // Update a song by ID
-router.put('/song/:id', songController.updateSong);
+router.put('/song/updateSong/:id', songController.updateSong);
 
 // Delete a song by ID
 router.delete('/song/:id', songController.deleteSong);
@@ -22,6 +22,8 @@ router.get('/search', songController.searchSongs);
 
 router.put('/song/updateView/:id', songController.updateView);
 
-router.get('/songs/popularSongs', songController.popularSongs)
+router.get('/songs/popularSongs', songController.popularSongs);
+
+router.get('/song/updateLike/:id',songController.updateLike);
 
 module.exports = router;

@@ -98,6 +98,23 @@ exports.updateView = async (req, res) => {
   }
 }
 
+exports.updateLike = async (req, res) => {
+  try {
+    const songId = req.params.id;
+    const song = await Song.findById(songId);
+    if (!song) {
+      return res.status(404).json({ message: 'Song not found' })
+    }
+    song.likes += 1;
+    await song.save();
+    res.json({ message: 'Likes updated successfully', song });
+  }
+  catch (error) {
+    res.status(500).json({ message: 'Error updating views', error });
+  }
+}
+
+
 exports.popularSongs = async (req, res) => {
   try {
     const popularSongs = await Song.find().sort({ views: -1 }).limit(4);
