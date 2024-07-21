@@ -41,15 +41,42 @@ body {
   
   #messages {
     list-style-type: none;
-    margin: 0;
     padding: 0;
   }
   
-  #messages>li {
-    padding: 0.5rem 1rem;
+  #messages li {
+    padding: 8px;
+    margin-bottom: 10px;
   }
   
-  #messages>li:nth-child(odd) {
-    background: #efefef;
+  #messages li.chat {
+    text-align: left;
   }
+  
+  #messages li.question {
+    text-align: left;
+    background-color: #f1f1f1;
+    border-radius: 10px;
+  }
+  
+  #messages li.answer {
+    text-align: right;
+    background-color: #d1ffd1;
+    border-radius: 10px;
+  }
+  
+  #form {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  #input {
+    flex-grow: 1;
+    margin-right: 10px;
+  }
+  
+  button {
+    padding: 10px 20px;
+  }
+  
   

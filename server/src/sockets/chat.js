@@ -1,14 +1,26 @@
+const GameManager = require('./gameManager');
+
 module.exports = (io) => {
-    io.on('connection', (socket) => {
-        console.log('a user connected');
+  const gameManager = new GameManager(io);
 
-        socket.on('disconnect', () => {
-            console.log('user disconnected');
-        });
+  io.on('connection', (socket) => {
+    console.log('a user connected');
 
-        socket.on('chat message', (msg) => {
-            console.log('message: ' + msg);
-            io.emit('chat message', msg);
-        });
+    socket.on('disconnect', () => {
+      console.log('user disconnected');
     });
+
+    socket.on('chat message', (msg) => {
+      console.log('message: ' + msg);
+      io.emit('chat message', msg);
+    });
+
+    socket.on('start game', () => {
+      gameManager.addPlayer(socket);
+    });
+
+    socket.on('answer', ({ answer }) => {
+      gameManager.handleAnswer(socket, answer);
+    });
+  });
 };
