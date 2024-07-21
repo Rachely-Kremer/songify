@@ -13,7 +13,7 @@ import { loginUser } from '../../Redux/userSlice';
 import { RootState } from '../../Redux/store';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { Link as RouterLink } from 'react-router-dom'; // ייבאי את ה-Link מה־react-router-dom
+import { Link as RouterLink } from 'react-router-dom';
 
 const defaultTheme = createTheme();
 
@@ -35,7 +35,7 @@ const Login: React.FC<LoginProps> = ({ onOpenSignUp, openDialog, onCloseDialog, 
             onCloseDialog();
             onLoginSuccess();
         }
-    }, [user, onCloseDialog]);
+    }, [user, onCloseDialog, onLoginSuccess]);
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -57,9 +57,20 @@ const Login: React.FC<LoginProps> = ({ onOpenSignUp, openDialog, onCloseDialog, 
         setShowPassword(!showPassword);
     };
 
+    const handleClose = (event: any, reason: string) => {
+        if (reason !== 'backdropClick') {
+            onCloseDialog();
+        }
+    };
+
     return (
         <React.Fragment>
-            <Dialog open={openDialog === 'login'} onClose={onCloseDialog}>
+            <Dialog
+                open={openDialog === 'login'}
+                onClose={handleClose}
+                disableEscapeKeyDown
+                BackdropProps={{ invisible: true }}
+            >
                 <ThemeProvider theme={defaultTheme}>
                     <Container component="main" maxWidth="xs">
                         <CssBaseline />
