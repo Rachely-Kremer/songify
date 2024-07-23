@@ -6,7 +6,7 @@ const songSchema = new Schema({
   songName: { type: String, required: true },
   inPlayList: { type: Boolean, default: false },
   singerName: { type: String, required: true },
-  likes: { type: Number, default: 0 },
+  likes: { type: Boolean, default: false},
   views: { type: Number, default: 0 },
   date: { type: Date, default: Date.now },
   songUrl: { type: String, required: true },
