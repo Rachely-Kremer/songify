@@ -69,12 +69,16 @@ exports.deleteSong = async (req, res) => {
   }
 };
 
-// פונקציה לחיפוש שירים
 exports.searchSongs = async (req, res) => {
   try {
-    const query = req.query.query;
+    const query = req.query.query.split(' ').map(word => `^${word}`).join('|');
+    const regex = new RegExp(query, 'i');
+
     const songs = await Song.find({
-      songName: { $regex: query, $options: 'i' },
+      $or: [
+        { songName: { $regex: regex } },
+        { singerName: { $regex: regex } }
+      ]
     });
 
     res.json(songs);
@@ -82,6 +86,20 @@ exports.searchSongs = async (req, res) => {
     res.status(500).json({ error: 'Error fetching search results' });
   }
 };
+
+// // פונקציה לחיפוש שירים
+// exports.searchSongs = async (req, res) => {
+//   try {
+//     const query = req.query.query;
+//     const songs = await Song.find({
+//       songName: { $regex: query, $options: 'i' },
+//     });
+
+//     res.json(songs);
+//   } catch (error) {
+//     res.status(500).json({ error: 'Error fetching search results' });
+//   }
+// };
 
 exports.updateView = async (req, res) => {
   try {
@@ -100,19 +118,28 @@ exports.updateView = async (req, res) => {
 
 exports.updateLike = async (req, res) => {
   try {
-    const songId = req.params.id;
-    const song = await Song.findById(songId);
-    if (!song) {
-      return res.status(404).json({ message: 'Song not found' })
-    }
-    song.likes += 1;
-    await song.save();
-    res.json({ message: 'Likes updated successfully', song });
+      const { songId } = req.params;
+      const { likeStatus } = req.body;
+
+      const song = await Song.findById(songId);
+      if (!song) {
+          return res.status(404).json({ message: 'Song not found' });
+      }
+
+      // Update likes based on likeStatus (true/false)
+      if (likeStatus) {
+          song.likes += 1;
+      } else {
+          song.likes -= 1;
+      }
+
+      await song.save();
+      res.json({ message: 'Like status updated successfully', song });
+  } catch (error) {
+      res.status(500).json({ message: 'Error updating like status', error });
   }
-  catch (error) {
-    res.status(500).json({ message: 'Error updating views', error });
-  }
-}
+};
+
 
 
 exports.popularSongs = async (req, res) => {

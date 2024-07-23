@@ -4,6 +4,7 @@ import axios from "axios";
 import { Song } from '../Types/song.type';
 
 interface SongsState {
+  [x: string]: any;
   songs: Song[];
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
@@ -20,7 +21,7 @@ export const fetchSongs = createAsyncThunk('songs/fetchSongs', async (_, thunkAP
     const response = await axios.get('http://localhost:5000/api/songs');
     return response.data;
   } catch (error) {
-    return thunkAPI.rejectWithValue(error);;
+    return thunkAPI.rejectWithValue(error);
   }
 });
 
@@ -41,19 +42,18 @@ export const updateView = createAsyncThunk('songs/updateView', async (songId: st
   }
 });
 
-export const updateLike = createAsyncThunk<void, string>('songs/updateLike', async (songId: string, thunkAPI) => {
+interface UpdateLikePayload {
+  songId: string;
+  newLikeStatus: boolean;
+}
+
+export const updateLike = createAsyncThunk('songs/updateLike', async (payload: UpdateLikePayload, thunkAPI) => {
+  const { songId, newLikeStatus } = payload;
   try {
-    const response = await fetch(`http://localhost:5000/api/song/updateLike/${songId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    const response = await axios.put(`http://localhost:5000/api/song/updateLike/${songId}`, { likeStatus: newLikeStatus });
+    return { songId, newLikeStatus };
   } catch (error) {
-    return thunkAPI.rejectWithValue(error);
+    return thunkAPI.rejectWithValue(error);;
   }
 });
 
@@ -81,14 +81,13 @@ const songSlice = createSlice({
         }
 
       })
-      .addCase(updateLike.pending, (state) => {
-        state.status = 'loading';
+      .addCase(updateLike.fulfilled, (state, action) => {
+        const updatedSong = state.songs.find(song => song._id === action.payload.songId);
+        if (updatedSong) {
+          updatedSong.likes = action.payload.newLikeStatus ? updatedSong.likes + 1 : updatedSong.likes - 1;
+        }
       })
-      .addCase(updateLike.fulfilled, (state) => {
-        state.status = 'idle';
-        state.error = null; // Clear any previous errors
-      })
-  
+
 
   }
 });
