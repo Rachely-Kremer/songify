@@ -3,7 +3,7 @@ export interface Song {
     songName: string;
     inPlayList: boolean;
     singerName: string;
-    likes: number;
+    likes: boolean;
     views: number;
     date: number;
     songUrl: string;

@@ -21,26 +21,24 @@ const DrawSong: React.FC<AllSongsProps> = ({ songs }) => {
   const [selectedSong, setSelectedSong] = useState<Song | null>(null);
   const [selectedPlaylist, setSelectedPlaylist] = useState<string>('');
 
-  const handleLikeClick = async (songId: string, currentLikeStatus: boolean) => {
-    try {
-      const newLikeStatus = !currentLikeStatus;
-      const actionResult = await dispatch(updateLike({ songId, newLikeStatus })) as ReturnType<typeof updateLike.fulfilled>;
-      const result = actionResult.payload;
-      console.log('Update like result:', result);
-    } catch (error) {
-      console.error('Error updating likes:', error);
-    }
-  };
 
-  const handleViewUpdate = async (songId: string) => {
+  const handleLikeClick = async (songId: string, isLiked: boolean) => {
     try {
-      const actionResult = await dispatch(updateView(songId)) as ReturnType<typeof updateView.fulfilled>;
-      const result = actionResult.payload;
-      console.log('Update view result:', result);
+        await dispatch(updateLike({ id: songId, isLiked }));
+        console.log('Like updated successfully');
     } catch (error) {
-      console.error('Error updating views:', error);
+        console.error('Error updating likes:', error);
     }
-  };
+};
+
+const handleViewUpdate = async (songId: string, views: number) => {
+  try {
+      console.log(`Updating view for song ${songId} to ${views + 1}`); // לוג לערכים
+      await dispatch(updateView({ id: songId, view: views + 1 })).unwrap();
+  } catch (error) {
+      console.error('Error updating views:', error);
+  }
+};
 
   const handleAddToPlaylist = (song: Song) => {
     setSelectedSong(song);
@@ -68,9 +66,9 @@ const DrawSong: React.FC<AllSongsProps> = ({ songs }) => {
               <div>
                 <IconButton
                   aria-label="toggle like"
-                  onClick={() => handleLikeClick(song._id, song.likes > 0)}
+                  onClick={() => handleLikeClick(song._id, !song.likes )}
                 >
-                  {song.likes > 0 ? <FavoriteIcon color="secondary" /> : <FavoriteBorderIcon />}
+                  {song.likes  ? <FavoriteIcon color="secondary" /> : <FavoriteBorderIcon />}
                 </IconButton>
                 <IconButton
                   aria-label="add to playlist"
@@ -81,7 +79,7 @@ const DrawSong: React.FC<AllSongsProps> = ({ songs }) => {
               </div>
               <p>Views: {song.views}</p>
               <p>{new Date(song.date).toLocaleDateString()}</p>
-              <audio controls src={song.songUrl} onPlay={() => handleViewUpdate(song._id)}></audio>
+              <audio controls src={song.songUrl} onPlay={() => handleViewUpdate(song._id,song.views)}></audio>
               {song.imageUrl ? (
                 <img src={song.imageUrl} alt={song.songName} style={{ width: '100px', height: '100px' }} />
               ) : (
@@ -103,10 +101,12 @@ const DrawSong: React.FC<AllSongsProps> = ({ songs }) => {
           </select>
           <button onClick={handleConfirmAddToPlaylist}>הוסף</button>
           <button onClick={() => setIsModalOpen(false)}>ביטול</button>
+
         </div>
       )}
     </div>
   );
 };
+
 
 export default DrawSong;

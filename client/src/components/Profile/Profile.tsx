@@ -30,7 +30,7 @@ function Profile() {
         <Tooltip title="Open settings">
           <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
           <Avatar>
-            
+          <Avatar>{user?.firstName.charAt(0).toUpperCase()}</Avatar>
           </Avatar>
           </IconButton>
         </Tooltip>

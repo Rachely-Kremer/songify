@@ -13,12 +13,34 @@ interface Question {
 const Chat: React.FC = () => {
   const [messageInput, setMessageInput] = useState<string>('');
   const [messages, setMessages] = useState<string[]>([]);
-  const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
-  const [sessionId, setSessionId] = useState<string | null>(null);
 
   useEffect(() => {
     socket.on('chat message', (msg: string) => {
-      setMessages((prevMessages) => [...prevMessages, msg]);
+      setMessages((prevMessages) => [...prevMessages, { msg, type: 'chat' }]);
+    });
+
+    socket.on('waiting', (msg: string) => {
+      setWaiting(msg);
+    });
+
+    socket.on('start', () => {
+      setWaiting(null);
+    });
+
+    socket.on('question', (q: { question: string, options: string[] }) => {
+      setQuestion(q);
+      setMessages((prevMessages) => [...prevMessages, { msg: q.question, type: 'question' }]);
+    });
+
+    socket.on('showAnswers', (answers: { player: string, answer: string }[]) => {
+      answers.forEach(answer => {
+        setMessages((prevMessages) => [...prevMessages, { msg: `${answer.player}: ${answer.answer}`, type: 'answer' }]);
+      });
+      setQuestion(null);
+    });
+
+    socket.on('end', (msg: string) => {
+      setMessages((prevMessages) => [...prevMessages, { msg, type: 'chat' }]);
     });
 
     socket.on('game start', ({ sessionId, question }: { sessionId: string, question: Question }) => {
@@ -36,9 +58,6 @@ const Chat: React.FC = () => {
 
     return () => {
       socket.off('chat message');
-      socket.off('game start');
-      socket.off('next question');
-      socket.off('game over');
     };
   }, []);
 
@@ -50,22 +69,13 @@ const Chat: React.FC = () => {
     }
   };
 
-  const startGame = () => {
-    socket.emit('start game');
-  };
-
-  const submitAnswer = (answer: string) => {
-    if (sessionId) {
-      socket.emit('submit answer', answer, sessionId);
-    }
-  };
-
   return (
     <div>
-      <button onClick={startGame}>Start Game</button>
       <ul id="messages">
-        {messages.map((msg, index) => (
-          <li key={index}>{msg}</li>
+        {messages.map((message, index) => (
+          <li key={index} className={message.type}>
+            {message.msg}
+          </li>
         ))}
       </ul>
       <form id="form" onSubmit={sendMessage}>
@@ -77,16 +87,6 @@ const Chat: React.FC = () => {
         />
         <button>Send</button>
       </form>
-      {currentQuestion && (
-        <div>
-          <p>{currentQuestion.question}</p>
-          {currentQuestion.options?.map((option, index) => (
-            <button key={index} onClick={() => submitAnswer(option)}>
-              {option}
-            </button>
-          ))}
-        </div>
-      )}
     </div>
   );
 };

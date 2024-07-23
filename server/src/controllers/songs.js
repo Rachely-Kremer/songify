@@ -46,12 +46,15 @@ exports.getSongById = async (req, res) => {
 // Update a song by ID
 exports.updateSong = async (req, res) => {
   try {
+    console.log('Request to update song:', req.params.id, req.body);
     const song = await Song.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+
     if (!song) {
       return res.status(404).json({ message: 'Song not found' });
     }
     res.status(200).json(song);
   } catch (error) {
+    console.error('Error updating song:', error);
     res.status(400).json({ error: error.message });
   }
 };

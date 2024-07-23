@@ -6,6 +6,8 @@ import { addToPlaylist, createPlaylist, fetchPlaylistEntries } from '../../Redux
 import { RootState, AppDispatch } from '../../Redux/store';
 import './styles.css';
 import { fetchSongs } from '../../Redux/songSlice';
+import DrawSong from './DrawSong';
+
 
 const SongComp = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -43,6 +45,13 @@ const SongComp = () => {
       dispatch(createPlaylist(newPlaylistName));
       setNewPlaylistName('');
       setIsCreatingPlaylist(false);
+
+  const handlePlay = async (songId: string, views: number) => {
+    try {
+      console.log(`Playing song: ${songId} with current views: ${views}`);
+      await dispatch(updateView({ id: songId, view: views + 1 })).unwrap();
+    } catch (error) {
+      console.error('Error updating views:', error);
     }
   };
 
@@ -51,10 +60,12 @@ const SongComp = () => {
       {loading ? (
         <p>Loading songs...</p>
       ) : (
+
         <>
           <h4>{songs[currentSongIndex]?.songName || 'No Song Selected'}</h4>
           <AudioPlayer
             src={songs[currentSongIndex]?.songUrl || ''}
+            onPlay={() => handlePlay(songs[currentSongIndex]._id, songs[currentSongIndex].views + 1)}
             onClickPrevious={handleClickPrevious}
             onClickNext={handleClickNext}
             showSkipControls={true}
@@ -81,6 +92,7 @@ const SongComp = () => {
               ))}
             </select>
           )}
+          <DrawSong songs={songs} />
         </>
       )}
     </div>
