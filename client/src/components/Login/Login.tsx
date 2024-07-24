@@ -9,11 +9,11 @@ import {
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../Redux/store';
-import { loginUser } from '../../Redux/userSlice';
+import { loginUser } from '../../Redux/authSlice';
 import { RootState } from '../../Redux/store';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { Link as RouterLink } from 'react-router-dom'; // ייבאי את ה-Link מה־react-router-dom
+import { Link as RouterLink } from 'react-router-dom';
 
 const defaultTheme = createTheme();
 
@@ -28,14 +28,14 @@ const Login: React.FC<LoginProps> = ({ onOpenSignUp, openDialog, onCloseDialog, 
     const dispatch = useDispatch<AppDispatch>();
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
     const [showPassword, setShowPassword] = useState(false);
-    const { error, loading, user } = useSelector((state: RootState) => state.users);
+    const { error, loading, user } = useSelector((state: RootState) => state.auth);
 
     useEffect(() => {
         if (user) {
             onCloseDialog();
             onLoginSuccess();
         }
-    }, [user, onCloseDialog]);
+    }, [user, onCloseDialog, onLoginSuccess]);
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -57,9 +57,19 @@ const Login: React.FC<LoginProps> = ({ onOpenSignUp, openDialog, onCloseDialog, 
         setShowPassword(!showPassword);
     };
 
+    const handleClose = (event: any, reason: string) => {
+        if (reason !== 'backdropClick') {
+            onCloseDialog();
+        }
+    };
+
     return (
         <React.Fragment>
-            <Dialog open={openDialog === 'login'} onClose={onCloseDialog}>
+            <Dialog
+                open={openDialog === 'login'}
+                onClose={handleClose}
+                disableEscapeKeyDown
+            >
                 <ThemeProvider theme={defaultTheme}>
                     <Container component="main" maxWidth="xs">
                         <CssBaseline />

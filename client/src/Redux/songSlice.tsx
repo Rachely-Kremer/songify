@@ -1,4 +1,3 @@
-// src/Redux/SongSlice.ts
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios from "axios";
 import { Song } from '../Types/song.type';
@@ -25,33 +24,39 @@ export const fetchSongs = createAsyncThunk('songs/fetchSongs', async (_, thunkAP
   }
 });
 
-export const updateView = createAsyncThunk('songs/updateView', async (songId: string, thunkAPI) => {
+export const updateView = createAsyncThunk('songs/updateView', async ({ id, view }: { id: string; view: number }, thunkAPI) => {
   try {
-    const response = await fetch(`http://localhost:5000/api/song/updateView/${songId}`, {
+    const response = await fetch(`http://localhost:5000/api/updateSong/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
-      }
+      },
+      body: JSON.stringify({ views: view }),
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    return songId;
+    const updatedSong = await response.json();
+    return { id: updatedSong._id, views: updatedSong.views };
   } catch (error) {
     return thunkAPI.rejectWithValue(error);
   }
 });
 
-interface UpdateLikePayload {
-  songId: string;
-  newLikeStatus: boolean;
-}
-
-export const updateLike = createAsyncThunk('songs/updateLike', async (payload: UpdateLikePayload, thunkAPI) => {
-  const { songId, newLikeStatus } = payload;
+export const updateLike = createAsyncThunk('songs/updateLike', async ({ id, isLiked }: { id: string; isLiked: boolean }, thunkAPI) => {
   try {
-    const response = await axios.put(`http://localhost:5000/api/song/updateLike/${songId}`, { likeStatus: newLikeStatus });
-    return { songId, newLikeStatus };
+    const response = await fetch(`http://localhost:5000/api/updateSong/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ likes: isLiked }),
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const updatedSong = await response.json();
+    return { id: updatedSong._id, likes: updatedSong.likes };
   } catch (error) {
     return thunkAPI.rejectWithValue(error);;
   }
@@ -74,21 +79,26 @@ const songSlice = createSlice({
         state.status = 'failed';
         state.error = (action.error.message) || 'Failed to fetch songs';
       })
-      .addCase(updateView.fulfilled, (state, action: PayloadAction<string>) => {
-        const song = state.songs.find(song => song._id === action.payload);
+      .addCase(updateView.fulfilled, (state, action: PayloadAction<{ id: string; views: number }>) => {
+        const { id, views } = action.payload;
+        const song = state.songs.find(song => song._id === id);
         if (song) {
-          song.views += 1;
-        }
-
-      })
-      .addCase(updateLike.fulfilled, (state, action) => {
-        const updatedSong = state.songs.find(song => song._id === action.payload.songId);
-        if (updatedSong) {
-          updatedSong.likes = action.payload.newLikeStatus ? updatedSong.likes + 1 : updatedSong.likes - 1;
+          song.views = views;  // תוודא שהשדה מעודכן ל-view החדש מהשרת
         }
       })
-
-
+      .addCase(updateView.rejected, (state, action) => {
+        state.error = (action.payload as Error).message || 'Unknown error';
+      })
+      .addCase(updateLike.fulfilled, (state, action: PayloadAction<{ id: string; likes: boolean }>) => {
+        const song = state.songs.find(song => song._id === action.payload.id);
+        if (song) {
+          song.likes = action.payload.likes;
+        }
+      })
+      .addCase(updateLike.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message || 'Failed to update likes';
+      });
   }
 });
 

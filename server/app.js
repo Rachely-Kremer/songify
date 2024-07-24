@@ -25,6 +25,7 @@ app.use(cors({
     origin: 'http://localhost:3000'
 }));
 app.use(bodyParser.json());
+app.use(express.json()); 
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/songs', express.static(path.join(__dirname, '..', 'client', 'songs')));

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
     Avatar, Button, CssBaseline, TextField,
-    FormControlLabel, Checkbox, Link, Grid, Box,
+    FormControlLabel, Checkbox, Grid, Box,
     Typography, Container,
     createTheme, ThemeProvider, Dialog,
     InputAdornment,
@@ -9,11 +9,10 @@ import {
 } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../Redux/store';
-import { signUpUser } from '../../Redux/userSlice';
+import { signUpUser } from '../../Redux/authSlice';
 import { User } from '../../Types/user.type';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { Link as RouterLink } from 'react-router-dom'; // ייבאי את ה-Link מה־react-router-dom
-
+import { Link as RouterLink } from 'react-router-dom';
 
 const defaultTheme = createTheme();
 
@@ -22,7 +21,6 @@ interface SignUpProps {
     openDialog: 'login' | 'signup' | null;
     onCloseDialog: () => void;
     onSignUpSuccess: () => void; 
-
 }
 
 const SignUp: React.FC<SignUpProps> = ({ onOpenLogin, openDialog, onCloseDialog, onSignUpSuccess }) => {
@@ -31,12 +29,18 @@ const SignUp: React.FC<SignUpProps> = ({ onOpenLogin, openDialog, onCloseDialog,
     const [showPassword, setShowPassword] = useState(false);
     const dispatch = useDispatch<AppDispatch>();
 
+    const validateEmail = (email: string) => {
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        return emailRegex.test(email);
+    };
+
     const validate = (data: { [key: string]: string }) => {
         const newErrors: { [key: string]: string } = {};
 
         if (!data.firstName) newErrors.firstName = 'First Name is required';
         if (!data.lastName) newErrors.lastName = 'Last Name is required';
         if (!data.email) newErrors.email = 'Email is required';
+        else if (!validateEmail(data.email)) newErrors.email = 'Email is not valid';
         if (!data.password) newErrors.password = 'Password is required';
 
         return newErrors;
@@ -82,9 +86,20 @@ const SignUp: React.FC<SignUpProps> = ({ onOpenLogin, openDialog, onCloseDialog,
         setShowPassword(!showPassword);
     };
 
+    const handleClose = (event: any, reason: string) => {
+        if (reason !== 'backdropClick') {
+            onCloseDialog();
+        }
+    };
+
     return (
         <React.Fragment>
-            <Dialog open={openDialog === 'signup'} onClose={onCloseDialog}>
+            <Dialog 
+            open={openDialog === 'signup'} 
+            onClose={handleClose}
+            disableEscapeKeyDown
+            BackdropProps={{ invisible: true }}
+            >
                 <ThemeProvider theme={defaultTheme}>
                     <Container component="main" maxWidth="xs">
                         <CssBaseline />
@@ -96,9 +111,7 @@ const SignUp: React.FC<SignUpProps> = ({ onOpenLogin, openDialog, onCloseDialog,
                                 alignItems: 'center',
                             }}
                         >
-                            <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                                {/* <LockOutlinedIcon /> */}
-                            </Avatar>
+                            <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }} />
                             <Typography component="h1" variant="h5">
                                 Sign Up
                             </Typography>

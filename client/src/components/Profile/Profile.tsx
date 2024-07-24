@@ -12,7 +12,7 @@ import { useSelector } from 'react-redux';
 
 function Profile() {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
-  const user = useSelector((state: RootState) => state.users.user);
+  const user = useSelector((state: RootState) => state.auth.user);
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -29,9 +29,7 @@ function Profile() {
       <Box sx={{ flexGrow: 0 }}>
         <Tooltip title="Open settings">
           <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-          <Avatar>
-            
-          </Avatar>
+            <Avatar>{user?.firstName.charAt(0).toUpperCase()}</Avatar>
           </IconButton>
         </Tooltip>
         <Menu
