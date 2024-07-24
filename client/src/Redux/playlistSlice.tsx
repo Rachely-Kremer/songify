@@ -1,0 +1,96 @@
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import axios, { AxiosError } from 'axios';
+import { Song } from '../Types/song.type';
+import { Playlist } from '../Types/playlist.type';
+
+interface PlaylistState {
+  songs: Song[];
+  playlistEntries: Playlist[];
+  loading: boolean;
+  error: string | null;
+}
+
+const initialState: PlaylistState = {
+  songs: [],
+  playlistEntries: [],
+  loading: false,
+  error: null,
+};
+
+export const fetchPlaylistEntries = createAsyncThunk('playlists/fetchPlaylistEntries', async (_, thunkAPI) => {
+  try {
+    const response = await axios.get('http://localhost:5000/api/playlists');
+    return response.data;
+  } catch (error) {
+    const axiosError = error as AxiosError;
+    return thunkAPI.rejectWithValue(axiosError.message);
+  }
+});
+
+export const addToPlaylist = createAsyncThunk('playlists/addToPlaylist', async ({ songId, playlistId }: { songId: string, playlistId: string }, { rejectWithValue }) => {
+  try {
+    const response = await axios.post(`http://localhost:5000/api/playlists/${playlistId}/${songId}`);
+    return response.data;
+  } catch (error) {
+    const axiosError = error as AxiosError;
+    return rejectWithValue(axiosError.message);
+  }
+});
+
+export const createPlaylist = createAsyncThunk('playlists/createPlaylist', async (playlistName: string, thunkAPI) => {
+  try {
+    const response = await axios.post('http://localhost:5000/api/playlists', { name: playlistName });
+    return response.data;
+  } catch (error) {
+    const axiosError = error as AxiosError;
+    return thunkAPI.rejectWithValue(axiosError.message);
+  }
+});
+
+const playlistSlice = createSlice({
+  name: 'playlist',
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchPlaylistEntries.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchPlaylistEntries.fulfilled, (state, action: PayloadAction<Playlist[]>) => {
+        state.loading = false;
+        state.playlistEntries = action.payload;
+      })
+      .addCase(fetchPlaylistEntries.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(addToPlaylist.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(addToPlaylist.fulfilled, (state, action: PayloadAction<Playlist>) => {
+        state.loading = false;
+        // Update the specific playlist with the new song
+        const index = state.playlistEntries.findIndex(p => p._id === action.payload._id);
+        if (index !== -1) {
+          state.playlistEntries[index] = action.payload;
+        }
+      })
+      .addCase(addToPlaylist.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(createPlaylist.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(createPlaylist.fulfilled, (state, action: PayloadAction<Playlist>) => {
+        state.loading = false;
+        state.playlistEntries.push(action.payload);
+      })
+      .addCase(createPlaylist.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+  },
+});
+
+export default playlistSlice.reducer;

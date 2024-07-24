@@ -72,12 +72,16 @@ exports.deleteSong = async (req, res) => {
   }
 };
 
-// פונקציה לחיפוש שירים
 exports.searchSongs = async (req, res) => {
   try {
-    const query = req.query.query;
+    const query = req.query.query.split(' ').map(word => `^${word}`).join('|');
+    const regex = new RegExp(query, 'i');
+
     const songs = await Song.find({
-      songName: { $regex: query, $options: 'i' },
+      $or: [
+        { songName: { $regex: regex } },
+        { singerName: { $regex: regex } }
+      ]
     });
 
     res.json(songs);
@@ -85,7 +89,6 @@ exports.searchSongs = async (req, res) => {
     res.status(500).json({ error: 'Error fetching search results' });
   }
 };
-
 
 exports.popularSongs = async (req, res) => {
   try {

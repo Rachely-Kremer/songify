@@ -10,6 +10,7 @@ const usersRouter = require('./src/routes/users');
 const songsRouter = require('./src/routes/songs');
 const playListsRouter = require('./src/routes/playLists');
 const chatHandler = require('./src/sockets/chat');
+const questionRouter = require('./src/routes/question');
 
 const app = express();
 const server = http.createServer(app);
@@ -24,24 +25,23 @@ app.use(cors({
     origin: 'http://localhost:3000'
 }));
 app.use(bodyParser.json());
+app.use(express.json()); 
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/songs', express.static(path.join(__dirname, '..', 'client', 'songs')));
 app.use('/assets', express.static(path.join(__dirname, '..', 'client', 'assets'))); // כאן התיקון
 
-
-
 app.use('/api', usersRouter);
 app.use('/api', songsRouter);
 app.use('/api', playListsRouter);
+app.use('/api', questionRouter);  // Ensure this line is correct
 
-const CONECTION_URL = 'mongodb+srv://rachely-shulamit:HfaIUExXUCLK8qna@songify.1d3fhhe.mongodb.net/Songify?retryWrites=true&w=majority&appName=Songify';
+const CONNECTION_URL = 'mongodb+srv://rachely-shulamit:HfaIUExXUCLK8qna@songify.1d3fhhe.mongodb.net/Songify?retryWrites=true&w=majority&appName=Songify';
 const PORT = process.env.PORT || 5000;
 
-mongoose.connect(CONECTION_URL, { useNewUrlParser: true, useUnifiedTopology: true }).then(
-    () => server.listen(PORT, () => console.log(`server runing on port ${PORT}`)))
+mongoose.connect(CONNECTION_URL, { useNewUrlParser: true, useUnifiedTopology: true }).then(
+    () => server.listen(PORT, () => console.log(`Server running on port ${PORT}`)))
     .catch((error) => console.log(error.message));
-
 
 chatHandler(io);
 

@@ -3,6 +3,7 @@ import axios from "axios";
 import { Song } from '../Types/song.type';
 
 interface SongsState {
+  [x: string]: any;
   songs: Song[];
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
@@ -57,7 +58,7 @@ export const updateLike = createAsyncThunk('songs/updateLike', async ({ id, isLi
     const updatedSong = await response.json();
     return { id: updatedSong._id, likes: updatedSong.likes };
   } catch (error) {
-    return thunkAPI.rejectWithValue(error);
+    return thunkAPI.rejectWithValue(error);;
   }
 });
 
