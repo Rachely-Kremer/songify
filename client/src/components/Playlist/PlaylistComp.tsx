@@ -3,8 +3,8 @@ import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../../Redux/store';
-import { fetchPlaylistEntries } from '../../Redux/playlistSlice';
-import { Playlist } from '../../Types/playlist.type';
+import { fetchPlaylistEntries, removeFromPlaylist } from '../../Redux/playlistSlice';
+import DrawSong from '../Song/DrawSong';
 
 const VideoPlaylistComp: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -21,7 +21,7 @@ const VideoPlaylistComp: React.FC = () => {
     if (playerRef.current) {
       const player = videojs(playerRef.current, {
         controls: true,
-        autoplay: false,
+        autoplay: false, 
         preload: 'auto',
         fluid: true,
       });
@@ -47,7 +47,6 @@ const VideoPlaylistComp: React.FC = () => {
         type: 'video/mp4',
       });
       player.poster(playlists[currentPlaylistIndex].songs[currentVideoIndex].imageUrl);
-      player.play();
     }
   }, [currentVideoIndex, currentPlaylistIndex, playlists]);
 
@@ -56,13 +55,8 @@ const VideoPlaylistComp: React.FC = () => {
     setCurrentVideoIndex(videoIndex);
   };
 
-  const handleAddToPlaylist = (playlistId: string, songId: string) => {
-    if (!playlistId || !songId) {
-      console.error("Playlist ID or Song ID is missing");
-      return;
-    }
-    // Perform the logic to add the song to the playlist
-    console.log(`Adding song ${songId} to playlist ${playlistId}`);
+  const handleRemoveFromPlaylist = (songId: string, playlistId: string) => {
+    dispatch(removeFromPlaylist({ songId, playlistId }));
   };
 
   return (
@@ -72,17 +66,10 @@ const VideoPlaylistComp: React.FC = () => {
           <div key={playlist._id}>
             <h3>{playlist.name}</h3>
             {playlist.songs && playlist.songs.length > 0 ? (
-              playlist.songs.map((song, videoIndex) => (
-                <div key={song._id} onClick={() => handleVideoClick(playlistIndex, videoIndex)}>
-                  <img src={song.imageUrl} alt={song.songName} />
-                  <p>{song.songName}</p>
-                  <button
-                    onClick={() => handleAddToPlaylist(playlist._id, song._id)}
-                  >
-                    Add to Playlist
-                  </button>
-                </div>
-              ))
+              <DrawSong
+                songs={playlist.songs}
+                onSongSelect={(song) => handleVideoClick(playlistIndex, playlist.songs.indexOf(song))}
+              />
             ) : (
               <p>No songs in this playlist.</p>
             )}

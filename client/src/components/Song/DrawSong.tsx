@@ -7,6 +7,7 @@ import IconButton from '@mui/material/IconButton';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import PauseCircleOutlineIcon from '@mui/icons-material/PauseCircleOutline';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
+import DeleteIcon from '@mui/icons-material/Delete'; // Import Delete icon
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -15,7 +16,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { updateView, updateLike, fetchSongs } from '../../Redux/songSlice';
-import { addToPlaylist, createPlaylist, fetchPlaylistEntries } from '../../Redux/playlistSlice';
+import { addToPlaylist, createPlaylist, fetchPlaylistEntries, removeFromPlaylist } from '../../Redux/playlistSlice';
 import { Song } from '../../Types/song.type';
 import { RootState, AppDispatch } from '../../Redux/store';
 import './styles.css';
@@ -23,9 +24,10 @@ import './styles.css';
 interface DrawSongProps {
   songs: Song[];
   onSongSelect: (song: Song) => void;
+  showRemoveButton?: boolean; 
 }
 
-const DrawSong: React.FC<DrawSongProps> = ({ songs, onSongSelect }) => {
+const DrawSong: React.FC<DrawSongProps> = ({ songs, onSongSelect, showRemoveButton = false }) => {
   const dispatch = useDispatch<AppDispatch>();
   const playlists = useSelector((state: RootState) => state.playlist.playlistEntries);
   const [playingSongId, setPlayingSongId] = useState<string | null>(null);
@@ -75,7 +77,7 @@ const DrawSong: React.FC<DrawSongProps> = ({ songs, onSongSelect }) => {
       if (currentAudio) {
         currentAudio.pause();
       }
-      setPlayingSongId(null); // Pause the song if it's already playing
+      setPlayingSongId(null); 
     } else {
       if (currentAudio) {
         currentAudio.pause();
@@ -84,13 +86,18 @@ const DrawSong: React.FC<DrawSongProps> = ({ songs, onSongSelect }) => {
         newAudio.play();
         handleViewUpdate(song._id, song.views);
       }
-      setPlayingSongId(song._id); // Play the new song
+      setPlayingSongId(song._id); 
     }
   };
 
   const handleAddToPlaylist = (song: Song) => {
     setSelectedSong(song);
     setIsModalOpen(true);
+  };
+
+  const handleRemoveFromPlaylist = async (songId: string, playlistId: string) => {
+    await dispatch(removeFromPlaylist({ songId, playlistId }));
+    await dispatch(fetchPlaylistEntries()); // Refresh playlist entries
   };
 
   const handleConfirmAddToPlaylist = async () => {
@@ -150,6 +157,14 @@ const DrawSong: React.FC<DrawSongProps> = ({ songs, onSongSelect }) => {
                   >
                     <PlaylistAddIcon />
                   </IconButton>
+                  {showRemoveButton && (
+                    <IconButton
+                      aria-label="remove from playlist"
+                      onClick={() => handleRemoveFromPlaylist(song._id, selectedPlaylist)} 
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  )}
                   <p className="views">Views: {localViews[song._id] ?? song.views}</p>
                   <p className="date">{new Date(song.date).toLocaleDateString()}</p>
                 </div>
@@ -164,10 +179,10 @@ const DrawSong: React.FC<DrawSongProps> = ({ songs, onSongSelect }) => {
         </div>
       )}
       <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <DialogTitle>בחר פלייליסט</DialogTitle>
+        <DialogTitle> Select a playlist</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            בחר פלייליסט להוסיף את השיר או צור פלייליסט חדש.
+            Select a playlist or create a new playlist.
           </DialogContentText>
           <select
             value={selectedPlaylist}
@@ -180,7 +195,7 @@ const DrawSong: React.FC<DrawSongProps> = ({ songs, onSongSelect }) => {
             ))}
           </select>
           <TextField
-            label=" Enter new playlist name"
+            label="Enter new playlist name"
             fullWidth
             value={newPlaylistName}
             onChange={(e) => setNewPlaylistName(e.target.value)}

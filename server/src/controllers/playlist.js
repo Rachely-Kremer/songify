@@ -55,6 +55,26 @@ exports.addSongToPlaylist = async (req, res) => {
   }
 };
 
+exports.removeSongFromPlaylist = async (req, res) => {
+  const { playlistId, songId } = req.params; // Destructure playlistId and songId from req.params
+
+  try {
+    const playlist = await Playlist.findById(playlistId);
+    if (!playlist) return res.status(404).json({ error: 'Playlist not found' });
+
+    const song = await Song.findById(songId);
+    if (!song) return res.status(404).json({ error: 'Song not found' });
+
+    // Push song into playlist's songs array and save
+    playlist.songs.remove(song);
+    await playlist.save();
+
+    res.status(200).json(playlist); // Respond with updated playlist
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to remove song to playlist' });
+  }
+};
 
 // Get all playlist entries
 exports.getAllPlaylistEntries = async (req, res) => {
