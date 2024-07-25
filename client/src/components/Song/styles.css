@@ -20,7 +20,6 @@
 
 .song-card.playing {
   background-color: #f0f0f0;
-  /* Change this to your desired color */
 }
 
 .song-card:hover {
@@ -40,7 +39,6 @@ h4 {
 .song-image {
   width: 100%;
   height: 171px;
-  /* Set the desired height */
   border-radius: 8px;
   object-fit: cover;
   margin-bottom: 16px;

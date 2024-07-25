@@ -29,12 +29,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/songs', express.static(path.join(__dirname, '..', 'client', 'songs')));
-app.use('/assets', express.static(path.join(__dirname, '..', 'client', 'assets'))); // כאן התיקון
+app.use('/assets', express.static(path.join(__dirname, '..', 'client', 'assets'))); 
 
 app.use('/api', usersRouter);
 app.use('/api', songsRouter);
 app.use('/api', playListsRouter);
-app.use('/api', questionRouter);  // Ensure this line is correct
+app.use('/api', questionRouter);
 
 const CONNECTION_URL = 'mongodb+srv://rachely-shulamit:HfaIUExXUCLK8qna@songify.1d3fhhe.mongodb.net/Songify?retryWrites=true&w=majority&appName=Songify';
 const PORT = process.env.PORT || 5000;

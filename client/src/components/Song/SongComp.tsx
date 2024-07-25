@@ -34,7 +34,7 @@ const SongComp: React.FC<SongCompProps> = ({ song }) => {
     try {
       console.log(`Updating view for song ${songId} to ${views + 1}`);
       await dispatch(updateView({ id: songId, view: views + 1 })).unwrap();
-      setLocalViews(views + 1); // Update local views state
+      setLocalViews(views + 1); 
     } catch (error) {
       console.error('Error updating views:', error);
     }
@@ -83,7 +83,6 @@ const SongComp: React.FC<SongCompProps> = ({ song }) => {
             autoPlayAfterSrcChange={true}
             autoPlay
           />
-          <button onClick={handleAddToPlaylist}>Add to Playlist</button>
           {isCreatingPlaylist && (
             <div>
               <input

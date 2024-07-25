@@ -7,7 +7,7 @@ import IconButton from '@mui/material/IconButton';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import PauseCircleOutlineIcon from '@mui/icons-material/PauseCircleOutline';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
-import DeleteIcon from '@mui/icons-material/Delete'; // Import Delete icon
+import DeleteIcon from '@mui/icons-material/Delete'; 
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -97,13 +97,13 @@ const DrawSong: React.FC<DrawSongProps> = ({ songs, onSongSelect, showRemoveButt
 
   const handleRemoveFromPlaylist = async (songId: string, playlistId: string) => {
     await dispatch(removeFromPlaylist({ songId, playlistId }));
-    await dispatch(fetchPlaylistEntries()); // Refresh playlist entries
+    await dispatch(fetchPlaylistEntries()); 
   };
 
   const handleConfirmAddToPlaylist = async () => {
     if (selectedSong && selectedPlaylist) {
       await dispatch(addToPlaylist({ songId: selectedSong._id, playlistId: selectedPlaylist }));
-      await dispatch(fetchPlaylistEntries()); // Refresh playlist entries
+      await dispatch(fetchPlaylistEntries());
       setIsModalOpen(false);
       setSelectedSong(null);
       setSelectedPlaylist('');
@@ -113,7 +113,7 @@ const DrawSong: React.FC<DrawSongProps> = ({ songs, onSongSelect, showRemoveButt
   const handleCreatePlaylist = async () => {
     if (newPlaylistName) {
       await dispatch(createPlaylist(newPlaylistName));
-      await dispatch(fetchPlaylistEntries()); // Refresh playlist entries
+      await dispatch(fetchPlaylistEntries()); 
       setNewPlaylistName('');
     }
   };

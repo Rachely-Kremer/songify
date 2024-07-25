@@ -1,7 +1,5 @@
-// controllers/songs.js
 const Song = require('../models/song');
 
-// Create a new song
 exports.createSong = async (req, res) => {
   try {
     const { songName, singerName, likes, views, songUrl, imageUrl } = req.body;
@@ -20,7 +18,6 @@ exports.createSong = async (req, res) => {
   }
 };
 
-// Get all songs
 exports.getAllSongs = async (req, res) => {
   try {
     const songs = await Song.find();
@@ -30,7 +27,6 @@ exports.getAllSongs = async (req, res) => {
   }
 };
 
-// Get a song by ID
 exports.getSongById = async (req, res) => {
   try {
     const song = await Song.findById(req.params.id);
@@ -43,7 +39,6 @@ exports.getSongById = async (req, res) => {
   }
 };
 
-// Update a song by ID
 exports.updateSong = async (req, res) => {
   try {
     console.log('Request to update song:', req.params.id, req.body);
@@ -59,7 +54,6 @@ exports.updateSong = async (req, res) => {
   }
 };
 
-// Delete a song by ID
 exports.deleteSong = async (req, res) => {
   try {
     const song = await Song.findByIdAndDelete(req.params.id);

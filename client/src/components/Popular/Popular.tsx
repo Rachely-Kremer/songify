@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Song } from '../Types/song.type';
+import { Song } from '../../Types/song.type';
 import 'react-h5-audio-player/lib/styles.css';
-import DrawSong from './Song/DrawSong';
-import SongComp from './Song/SongComp';
+import DrawSong from '../Song/DrawSong';
+import SongComp from '../Song/SongComp';
 
 const PopularSongs = () => {
     const [popularSongs, setPopularSongs] = useState<Song[]>([]);

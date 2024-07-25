@@ -55,7 +55,7 @@ const Chat: React.FC = () => {
     });
 
     socket.on('end', (msg: string) => {
-      console.log('Game ended:', msg); // הודעת לוג חדשה
+      console.log('Game ended:', msg);
       setMessages((prevMessages) => [...prevMessages, { msg, type: 'chat', user: null }]);
       setGameActive(false);
 

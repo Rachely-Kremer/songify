@@ -107,7 +107,7 @@ const SignUp: React.FC<SignUpProps> = ({ onOpenLogin, openDialog, onCloseDialog,
                             display: 'flex',
                             flexDirection: 'column',
                             alignItems: 'center',
-                            bgcolor: theme.palette.background.paper, // צבע הרקע של הקונטיינר לפי ה-theme
+                            bgcolor: theme.palette.background.paper, 
                             padding: 3,
                             borderRadius: 1,
                         }}
@@ -131,12 +131,12 @@ const SignUp: React.FC<SignUpProps> = ({ onOpenLogin, openDialog, onCloseDialog,
                                         helperText={errors.firstName}
                                         InputProps={{
                                             sx: {
-                                                bgcolor: 'transparent', // צבע הרקע שקוף
-                                                color: theme.palette.text.primary, // צבע טקסט לפי ה-theme
-                                                border: '1px solid #333333', // צבע המסגרת אפור כהה יותר
-                                                borderRadius: 1, // קצה מעוגל למסגרת
+                                                bgcolor: 'transparent',
+                                                color: theme.palette.text.primary,
+                                                border: '1px solid #333333',
+                                                borderRadius: 1, 
                                                 '& .MuiInputBase-input': {
-                                                    padding: '10px', // ריפוד פנימי
+                                                    padding: '10px', 
                                                 }
                                             }
                                         }}
@@ -154,12 +154,12 @@ const SignUp: React.FC<SignUpProps> = ({ onOpenLogin, openDialog, onCloseDialog,
                                         helperText={errors.lastName}
                                         InputProps={{
                                             sx: {
-                                                bgcolor: 'transparent', // צבע הרקע שקוף
-                                                color: theme.palette.text.primary, // צבע טקסט לפי ה-theme
-                                                border: '1px solid #333333', // צבע המסגרת אפור כהה יותר
-                                                borderRadius: 1, // קצה מעוגל למסגרת
+                                                bgcolor: 'transparent',
+                                                color: theme.palette.text.primary, 
+                                                border: '1px solid #333333', 
+                                                borderRadius: 1,
                                                 '& .MuiInputBase-input': {
-                                                    padding: '10px', // ריפוד פנימי
+                                                    padding: '10px', 
                                                 }
                                             }
                                         }}
@@ -177,12 +177,12 @@ const SignUp: React.FC<SignUpProps> = ({ onOpenLogin, openDialog, onCloseDialog,
                                         helperText={errors.email}
                                         InputProps={{
                                             sx: {
-                                                bgcolor: 'transparent', // צבע הרקע שקוף
-                                                color: theme.palette.text.primary, // צבע טקסט לפי ה-theme
-                                                border: '1px solid #333333', // צבע המסגרת אפור כהה יותר
-                                                borderRadius: 1, // קצה מעוגל למסגרת
+                                                bgcolor: 'transparent', 
+                                                color: theme.palette.text.primary, 
+                                                border: '1px solid #333333',
+                                                borderRadius: 1, 
                                                 '& .MuiInputBase-input': {
-                                                    padding: '10px', // ריפוד פנימי
+                                                    padding: '10px', 
                                                 }
                                             }
                                         }}
@@ -206,19 +206,19 @@ const SignUp: React.FC<SignUpProps> = ({ onOpenLogin, openDialog, onCloseDialog,
                                                         aria-label="toggle password visibility"
                                                         onClick={handleClickShowPassword}
                                                         edge="end"
-                                                        sx={{ color: theme.palette.primary.main }} // צבע האיקון ירוק
+                                                        sx={{ color: theme.palette.primary.main }} 
                                                     >
                                                         {showPassword ? <VisibilityOff /> : <Visibility />}
                                                     </IconButton>
                                                 </InputAdornment>
                                             ),
                                             sx: {
-                                                bgcolor: 'transparent', // צבע הרקע שקוף
-                                                color: theme.palette.text.primary, // צבע טקסט לפי ה-theme
-                                                border: '1px solid #333333', // צבע המסגרת אפור כהה יותר
-                                                borderRadius: 1, // קצה מעוגל למסגרת
+                                                bgcolor: 'transparent',
+                                                color: theme.palette.text.primary,
+                                                border: '1px solid #333333',
+                                                borderRadius: 1, 
                                                 '& .MuiInputBase-input': {
-                                                    padding: '10px', // ריפוד פנימי
+                                                    padding: '10px', 
                                                 }
                                             }
                                         }}
@@ -228,7 +228,7 @@ const SignUp: React.FC<SignUpProps> = ({ onOpenLogin, openDialog, onCloseDialog,
                                     <FormControlLabel
                                         control={<Checkbox value="allowExtraEmails" color="primary" />}
                                         label="I want to receive inspiration, marketing promotions and updates via email."
-                                        sx={{ color: theme.palette.text.primary }} // צבע טקסט לפי ה-theme
+                                        sx={{ color: theme.palette.text.primary }}
                                     />
                                 </Grid>
                             </Grid>

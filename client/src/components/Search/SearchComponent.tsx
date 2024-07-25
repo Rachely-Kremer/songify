@@ -79,7 +79,7 @@ const SearchComponent: React.FC = () => {
 
       const data: Song[] = await response.json();
       setSearchResults(data);
-      setSearched(true); // Update state to indicate search has been performed
+      setSearched(true); 
       console.log('Searching for:', searchQuery);
     } catch (error) {
       console.error('Error fetching search results:', error);
@@ -90,7 +90,7 @@ const SearchComponent: React.FC = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       handleSearch();
-    }, 500); // Adjust the delay (in milliseconds) as needed
+    }, 500); 
 
     return () => clearTimeout(timer);
   }, [searchQuery, handleSearch]);

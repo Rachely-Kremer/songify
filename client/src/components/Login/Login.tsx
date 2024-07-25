@@ -15,7 +15,7 @@ import { RootState } from '../../Redux/store';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { Link as RouterLink } from 'react-router-dom';
-import theme from '../../Theme'; // Import the theme
+import theme from '../../Theme'; 
 
 interface LoginProps {
     onOpenSignUp: () => void;
@@ -78,7 +78,7 @@ const Login: React.FC<LoginProps> = ({ onOpenSignUp, openDialog, onCloseDialog, 
                             display: 'flex',
                             flexDirection: 'column',
                             alignItems: 'center',
-                            bgcolor: theme.palette.background.paper, // צבע הרקע של הקונטיינר לפי ה-theme
+                            bgcolor: theme.palette.background.paper,
                             padding: 3,
                             borderRadius: 1,
                         }}
@@ -103,12 +103,12 @@ const Login: React.FC<LoginProps> = ({ onOpenSignUp, openDialog, onCloseDialog, 
                                 helperText={errors.email}
                                 InputProps={{
                                     sx: {
-                                        bgcolor: 'transparent', // צבע הרקע שקוף
-                                        color: theme.palette.text.primary, // צבע טקסט לפי ה-theme
-                                        border: '1px solid #333333', // צבע המסגרת אפור כהה יותר
-                                        borderRadius: 1, // קצה מעוגל למסגרת
+                                        bgcolor: 'transparent',
+                                        color: theme.palette.text.primary, 
+                                        border: '1px solid #333333', 
+                                        borderRadius: 1, 
                                         '& .MuiInputBase-input': {
-                                            padding: '10px', // ריפוד פנימי
+                                            padding: '10px', 
                                         }
                                     }
                                 }}
@@ -131,19 +131,19 @@ const Login: React.FC<LoginProps> = ({ onOpenSignUp, openDialog, onCloseDialog, 
                                                 aria-label="toggle password visibility"
                                                 onClick={handleClickShowPassword}
                                                 edge="end"
-                                                sx={{ color: theme.palette.primary.main }} // צבע האיקון ירוק
+                                                sx={{ color: theme.palette.primary.main }}
                                             >
                                                 {showPassword ? <VisibilityOff /> : <Visibility />}
                                             </IconButton>
                                         </InputAdornment>
                                     ),
                                     sx: {
-                                        bgcolor: 'transparent', // צבע הרקע שקוף
-                                        color: theme.palette.text.primary, // צבע טקסט לפי ה-theme
-                                        border: '1px solid #333333', // צבע המסגרת אפור כהה יותר
-                                        borderRadius: 1, // קצה מעוגל למסגרת
+                                        bgcolor: 'transparent', 
+                                        color: theme.palette.text.primary, 
+                                        border: '1px solid #333333', 
+                                        borderRadius: 1, 
                                         '& .MuiInputBase-input': {
-                                            padding: '10px', // ריפוד פנימי
+                                            padding: '10px', 
                                         }
                                     }
                                 }}
