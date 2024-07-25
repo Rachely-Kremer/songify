@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../../Redux/store';
 import { fetchPlaylistEntries } from '../../Redux/playlistSlice';
 import { Playlist } from '../../Types/playlist.type';
+import DrawSong from '../Song/DrawSong'; // Import DrawSong
 
 const VideoPlaylistComp: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -21,7 +22,7 @@ const VideoPlaylistComp: React.FC = () => {
     if (playerRef.current) {
       const player = videojs(playerRef.current, {
         controls: true,
-        autoplay: false,
+        autoplay: false, // Ensure autoplay is false
         preload: 'auto',
         fluid: true,
       });
@@ -47,7 +48,7 @@ const VideoPlaylistComp: React.FC = () => {
         type: 'video/mp4',
       });
       player.poster(playlists[currentPlaylistIndex].songs[currentVideoIndex].imageUrl);
-      player.play();
+      // Remove player.play() to prevent autoplay
     }
   }, [currentVideoIndex, currentPlaylistIndex, playlists]);
 
@@ -72,17 +73,7 @@ const VideoPlaylistComp: React.FC = () => {
           <div key={playlist._id}>
             <h3>{playlist.name}</h3>
             {playlist.songs && playlist.songs.length > 0 ? (
-              playlist.songs.map((song, videoIndex) => (
-                <div key={song._id} onClick={() => handleVideoClick(playlistIndex, videoIndex)}>
-                  <img src={song.imageUrl} alt={song.songName} />
-                  <p>{song.songName}</p>
-                  <button
-                    onClick={() => handleAddToPlaylist(playlist._id, song._id)}
-                  >
-                    Add to Playlist
-                  </button>
-                </div>
-              ))
+              <DrawSong songs={playlist.songs} onSongSelect={(song) => handleVideoClick(playlistIndex, playlist.songs.indexOf(song))} />
             ) : (
               <p>No songs in this playlist.</p>
             )}
