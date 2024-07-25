@@ -2,13 +2,12 @@ import React, { useState, useEffect } from 'react';
 import AudioPlayer from 'react-h5-audio-player';
 import { useSelector, useDispatch } from 'react-redux';
 import 'react-h5-audio-player/lib/styles.css';
-import { fetchSongs } from '../../Redux/songSlice';
+import { fetchSongs, updateView } from '../../Redux/songSlice';
 import { RootState, AppDispatch } from '../../Redux/store';
 import './styles.css';
-import { updateView } from '../../Redux/songSlice';
 import DrawSong from './DrawSong';
 
-const SongComp = () => {
+const SongComp: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const songs = useSelector((state: RootState) => state.songs.songs);
   const songStatus = useSelector((state: RootState) => state.songs.status);
@@ -37,27 +36,37 @@ const SongComp = () => {
     }
   };
 
+  if (songStatus === 'loading') {
+    return <p>Loading songs...</p>;
+  }
+
+  if (songStatus === 'failed') {
+    return <p>Error fetching songs...</p>;
+  }
+
+  if (songStatus === 'succeeded' && songs.length === 0) {
+    return <p>No songs available.</p>;
+  }
+
+  const currentSong = songs[currentSongIndex];
+
+  if (!currentSong) {
+    return <p>No current song to play.</p>;
+  }
+
   return (
     <div className="song-container">
-      {songStatus === 'loading' ? (
-        <p>Loading songs...</p>
-      ) : songStatus === 'succeeded' ? (
-        <>
-          <h4>{songs[currentSongIndex].songName}</h4>
-          <AudioPlayer
-            src={songs[currentSongIndex].songUrl}
-            onPlay={() => handlePlay(songs[currentSongIndex]._id, songs[currentSongIndex].views + 1)}
-            onClickPrevious={handleClickPrevious}
-            onClickNext={handleClickNext}
-            showSkipControls={true}
-            showJumpControls={false}
-            autoPlayAfterSrcChange={true}
-          />
-          <DrawSong songs={songs} />
-        </>
-      ) : songStatus === 'failed' ? (
-        <p>Error fetching songs...</p>
-      ) : null}
+      <DrawSong songs={songs} />
+      <h4>{currentSong.songName}</h4>
+      <AudioPlayer
+        src={currentSong.songUrl}
+        onPlay={() => handlePlay(currentSong._id, currentSong.views)}
+        onClickPrevious={handleClickPrevious}
+        onClickNext={handleClickNext}
+        showSkipControls={true}
+        showJumpControls={false}
+        autoPlayAfterSrcChange={true}
+      />
     </div>
   );
 };

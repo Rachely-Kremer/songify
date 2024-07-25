@@ -24,7 +24,6 @@ import Popular from '../Popular';
 import LocalFireDepartmentOutlinedIcon from '@mui/icons-material/LocalFireDepartmentOutlined';
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 
-
 import HomeComp from '../Home/HomeComp';
 import PlaylistComp from '../Playlist/PlaylistComp';
 import ChatIcon from '@mui/icons-material/Chat';
@@ -40,6 +39,8 @@ const openedMixin = (theme: Theme): CSSObject => ({
     duration: theme.transitions.duration.enteringScreen,
   }),
   overflowX: 'hidden',
+  backgroundColor: theme.palette.background.paper,
+  color: theme.palette.text.primary,
 });
 
 const closedMixin = (theme: Theme): CSSObject => ({
@@ -52,6 +53,8 @@ const closedMixin = (theme: Theme): CSSObject => ({
   [theme.breakpoints.up('sm')]: {
     width: `calc(${theme.spacing(8)} + 1px)`,
   },
+  backgroundColor: theme.palette.background.paper,
+  color: theme.palette.text.primary,
 });
 
 const DrawerHeader = styled('div')(({ theme }) => ({
@@ -90,6 +93,8 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     flexShrink: 0,
     whiteSpace: 'nowrap',
     boxSizing: 'border-box',
+    backgroundColor: 'inherit', // Ensure the background color matches parent
+    color: 'inherit', // Ensure the text color matches parent
     ...(open && {
       ...openedMixin(theme),
       '& .MuiDrawer-paper': openedMixin(theme),
@@ -123,10 +128,9 @@ const PlaylistComponentMemo = React.memo(PlaylistComp);
 const GameChatComponentMemo = React.memo(ChatComp);
 const PopularComponentMemo = React.memo(Popular);
 
-
 export default function MiniDrawer() {
   const theme = useTheme();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(true);
   const [currentComponent, setCurrentComponent] = React.useState<IconName>('Home');
   const navigate = useNavigate();
 
@@ -136,7 +140,6 @@ export default function MiniDrawer() {
     Playlist: { icon: <QueueMusicOutlinedIcon />, activeIcon: <QueueMusicIcon />, isActive: false },
     GameChat: { icon: <ChatOutlinedIcon />, activeIcon: <ChatIcon />, isActive: false },
     Popular: { icon: <LocalFireDepartmentOutlinedIcon />, activeIcon: <LocalFireDepartmentIcon />, isActive: false },
-
   });
 
   const handleDrawerToggle = () => {
@@ -157,23 +160,6 @@ export default function MiniDrawer() {
 
   return (
     <Box sx={{ display: 'flex' }}>
-      {/* <CssBaseline /> */}
-      {/* <AppBar position="fixed" open={open}>
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerToggle}
-            edge="start"
-            sx={{ marginRight: 5, ...(open && { display: 'none' }) }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            Mini variant drawer
-          </Typography>
-        </Toolbar>
-      </AppBar> */}
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
           <IconButton onClick={handleDrawerToggle}>
@@ -190,6 +176,7 @@ export default function MiniDrawer() {
                   minHeight: 48,
                   justifyContent: open ? 'initial' : 'center',
                   px: 2.5,
+                  color: theme.palette.text.primary,
                 }}
               >
                 <ListItemIcon
@@ -197,17 +184,18 @@ export default function MiniDrawer() {
                     minWidth: 0,
                     mr: open ? 3 : 'auto',
                     justifyContent: 'center',
+                    color: theme.palette.text.primary,
                   }}
                 >
                   {isActive ? activeIcon : icon}
                 </ListItemIcon>
-                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
+                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0, color: theme.palette.text.primary }} />
               </ListItemButton>
             </ListItem>
           ))}
         </List>
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+      <Box component="main" sx={{ flexGrow: 1, p: 3, backgroundColor: theme.palette.background.default, borderRadius: '8px' }}>
         <DrawerHeader />
         {currentComponent === 'Home' && <HomeComponent />}
         {currentComponent === 'Search' && <SearchComponentMemo />}
