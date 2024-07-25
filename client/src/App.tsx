@@ -12,14 +12,14 @@ import theme from './Theme';
 
 function App() {
   const [openDialog, setOpenDialog] = useState<'login' | 'signup' | null>(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // State to track login status
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setOpenDialog('login');
-    }, 5000); // 5 שניות השהייה
-    return () => clearTimeout(timer); // מנקה את הטיימר כשלא צריך אותו יותר
+    }, 5000); 
+    return () => clearTimeout(timer); 
   }, []);
 
 
@@ -38,13 +38,12 @@ function App() {
 
   const handleLoginSuccess = () => {
     setIsLoggedIn(true);
-    setOpenDialog(null); // Close the login/signup dialogs
+    setOpenDialog(null);
   };
 
-  // Function to handle successful registration
   const handleSignUpSuccess = () => {
     setIsLoggedIn(true);
-    setOpenDialog(null); // Close the login/signup dialogs
+    setOpenDialog(null); 
   };
 
 

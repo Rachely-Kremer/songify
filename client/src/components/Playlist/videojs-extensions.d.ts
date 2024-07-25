@@ -6,6 +6,7 @@ declare module 'video.js' {
     playlistUi: () => void;
   }
 }
+
 declare module 'videojs-playlist' {
   import videojs from 'video.js';
   const videojsPlaylist: (player: videojs.Player, playlist: videojs.PlaylistItem[]) => void;

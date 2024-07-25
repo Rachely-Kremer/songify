@@ -4,5 +4,4 @@ export interface User {
     lastName: string,
     email: string;
     password: string;
-    // הוסף שדות נוספים לפי הצורך
 }

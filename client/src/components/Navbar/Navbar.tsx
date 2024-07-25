@@ -1,5 +1,4 @@
 import * as React from 'react';
-import './navbar.css';
 import { useNavigate } from 'react-router-dom';
 import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -20,10 +19,9 @@ import HomeIcon from '@mui/icons-material/Home';
 import QueueMusicIcon from '@mui/icons-material/QueueMusic';
 import { RiSearchLine, RiSearchFill } from 'react-icons/ri';
 import SearchComponent from '../Search/SearchComponent';
-import Popular from '../Popular';
+import Popular from '../Popular/Popular';
 import LocalFireDepartmentOutlinedIcon from '@mui/icons-material/LocalFireDepartmentOutlined';
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
-
 import HomeComp from '../Home/HomeComp';
 import PlaylistComp from '../Playlist/PlaylistComp';
 import ChatIcon from '@mui/icons-material/Chat';
@@ -33,7 +31,6 @@ import ChatComp from '../Chat/Chat';
 const drawerWidth = 240;
 
 const openedMixin = (theme: Theme): CSSObject => ({
-  // width: drawerWidth,
   transition: theme.transitions.create('width', {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.enteringScreen,
@@ -77,19 +74,10 @@ const AppBar = styled(MuiAppBar, {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
-  ...(open && {
-    // marginLeft: drawerWidth,
-    // width: `calc(100% - ${drawerWidth}px)`,
-    // transition: theme.transitions.create(['width', 'margin'], {
-    //   easing: theme.transitions.easing.sharp,
-    //   duration: theme.transitions.duration.enteringScreen,
-    // }),
-  }),
 }));
 
 const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }) => ({
-    // width: drawerWidth,
     flexShrink: 0,
     whiteSpace: 'nowrap',
     boxSizing: 'border-box',

@@ -1,4 +1,4 @@
-const Question = require('../models/question'); // ודא שהמודל הזה קיים
+const Question = require('../models/question');
 const { options } = require('../routes/users');
 
 class GameManager {
@@ -9,7 +9,6 @@ class GameManager {
   }
 
   addPlayer(socket) {
-    // בדוק אם יש כבר שחקן עם כתובת המייל הזו
     const existingPlayer = this.waitingPlayers.find(player => player.user.email === socket.user.email);
     if (existingPlayer) {
       socket.emit('error', 'Player with this email is already in the waiting list.');

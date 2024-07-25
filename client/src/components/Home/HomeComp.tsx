@@ -5,7 +5,6 @@ import DrawSong from '../Song/DrawSong';
 import { Song } from '../../Types/song.type';
 import { fetchSongs } from '../../Redux/songSlice';
 import { AppDispatch, RootState } from '../../Redux/store';
-import './home.css';
 
 const HomeComp = () => {
     const dispatch = useDispatch<AppDispatch>();

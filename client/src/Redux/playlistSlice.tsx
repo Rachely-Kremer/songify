@@ -78,7 +78,6 @@ const playlistSlice = createSlice({
       })
       .addCase(addToPlaylist.fulfilled, (state, action: PayloadAction<Playlist>) => {
         state.loading = false;
-        // Update the specific playlist with the new song
         const index = state.playlistEntries.findIndex(p => p._id === action.payload._id);
         if (index !== -1) {
           state.playlistEntries[index] = action.payload;
