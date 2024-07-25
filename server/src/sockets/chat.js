@@ -6,6 +6,13 @@ module.exports = (io) => {
   io.on('connection', (socket) => {
     console.log('a user connected');
 
+
+    socket.on('user connected', (user) => {
+      if (user) {
+        socket.user = user;
+      }
+    });
+
     socket.on('disconnect', () => {
       console.log('user disconnected');
     });

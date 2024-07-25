@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../Redux/store';
-import { loginUser } from '../../Redux/userSlice';
+import { loginUser } from '../../Redux/authSlice';
 import { RootState } from '../../Redux/store';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
@@ -28,7 +28,7 @@ const Login: React.FC<LoginProps> = ({ onOpenSignUp, openDialog, onCloseDialog, 
     const dispatch = useDispatch<AppDispatch>();
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
     const [showPassword, setShowPassword] = useState(false);
-    const { error, loading, user } = useSelector((state: RootState) => state.users);
+    const { error, loading, user } = useSelector((state: RootState) => state.auth);
 
     useEffect(() => {
         if (user) {
