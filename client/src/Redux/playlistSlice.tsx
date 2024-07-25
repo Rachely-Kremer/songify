@@ -29,7 +29,7 @@ export const fetchPlaylistEntries = createAsyncThunk('playlists/fetchPlaylistEnt
 
 export const addToPlaylist = createAsyncThunk('playlists/addToPlaylist', async ({ songId, playlistId }: { songId: string, playlistId: string }, { rejectWithValue }) => {
   try {
-    const response = await axios.post(`http://localhost:5000/api/playlists/${playlistId}/${songId}`);
+    const response = await axios.post(`http://localhost:5000/api/playlist/${playlistId}/${songId}`);
     return response.data;
   } catch (error) {
     const axiosError = error as AxiosError;

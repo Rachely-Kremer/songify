@@ -2,10 +2,11 @@ const express = require('express');
 const router = express.Router();
 const playlistController = require('../controllers/playlist');
 
+
 // Create a new playlist entry
 router.post('/playlists', playlistController.createPlaylist);
+router.post('/playlist/:playlistId/:songId', playlistController.addSongToPlaylist);
 
-router.post('/playlists/:playlistId/:songId', playlistController.addSongToPlaylist);
 
 // Get all playlist entries
 router.get('/playlists', playlistController.getAllPlaylistEntries);
