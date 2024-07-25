@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { Schema, model } = mongoose;
+const  Schema = mongoose.Schema;
 
 
 const songSchema = new Schema({
@@ -13,5 +13,5 @@ const songSchema = new Schema({
   imageUrl: { type: String, required: true }
 });
 
-const Song = model('Song', songSchema);
+const Song = mongoose.model('Song', songSchema);
 module.exports = Song;

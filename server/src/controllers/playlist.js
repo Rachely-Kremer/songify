@@ -1,4 +1,5 @@
 const Playlist = require('../models/playList');
+const Song = require('../models/song'); // Ensure the Song model is imported
 
 // // Create a new playlist entry
 // exports.createPlaylistEntry = async (req, res) => {
@@ -34,8 +35,7 @@ exports.createPlaylist = async (req, res) => {
 
 
 exports.addSongToPlaylist = async (req, res) => {
-  const playlistId = req.params.playlistId;
-  const songId = req.body.songId;
+  const { playlistId, songId } = req.params; // Destructure playlistId and songId from req.params
 
   try {
     const playlist = await Playlist.findById(playlistId);
@@ -44,11 +44,13 @@ exports.addSongToPlaylist = async (req, res) => {
     const song = await Song.findById(songId);
     if (!song) return res.status(404).json({ error: 'Song not found' });
 
+    // Push song into playlist's songs array and save
     playlist.songs.push(song);
     await playlist.save();
 
-    res.status(200).json(playlist);
+    res.status(200).json(playlist); // Respond with updated playlist
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: 'Failed to add song to playlist' });
   }
 };

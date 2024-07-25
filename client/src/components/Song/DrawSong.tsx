@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import 'react-h5-audio-player/lib/styles.css';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -7,11 +7,18 @@ import IconButton from '@mui/material/IconButton';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import PauseCircleOutlineIcon from '@mui/icons-material/PauseCircleOutline';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
-import { updateView, updateLike } from '../../Redux/songSlice';
-import { addToPlaylist } from '../../Redux/playlistSlice';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import { updateView, updateLike, fetchSongs } from '../../Redux/songSlice';
+import { addToPlaylist, createPlaylist, fetchPlaylistEntries } from '../../Redux/playlistSlice';
 import { Song } from '../../Types/song.type';
 import { RootState, AppDispatch } from '../../Redux/store';
-import './styles.css'; 
+import './styles.css';
 
 interface DrawSongProps {
   songs: Song[];
@@ -21,7 +28,6 @@ interface DrawSongProps {
 const DrawSong: React.FC<DrawSongProps> = ({ songs, onSongSelect }) => {
   const dispatch = useDispatch<AppDispatch>();
   const playlists = useSelector((state: RootState) => state.playlist.playlistEntries);
-
   const [playingSongId, setPlayingSongId] = useState<string | null>(null);
   const [localViews, setLocalViews] = useState<{ [key: string]: number }>({});
   const [likesState, setLikesState] = useState<Record<string, boolean>>({});
@@ -29,8 +35,12 @@ const DrawSong: React.FC<DrawSongProps> = ({ songs, onSongSelect }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSong, setSelectedSong] = useState<Song | null>(null);
   const [selectedPlaylist, setSelectedPlaylist] = useState<string>('');
+  const [newPlaylistName, setNewPlaylistName] = useState<string>('');
 
-
+  useEffect(() => {
+    dispatch(fetchSongs());
+    dispatch(fetchPlaylistEntries());
+  }, [dispatch]);
 
   const handleLikeClick = async (songId: string, isLiked: boolean) => {
     try {
@@ -57,7 +67,6 @@ const DrawSong: React.FC<DrawSongProps> = ({ songs, onSongSelect }) => {
 
   const handleIconClick = (song: Song) => {
     onSongSelect(song);
-    // handleViewUpdate(song._id, song.views);
 
     const currentAudio = audioRefs.current[playingSongId || ''];
     const newAudio = audioRefs.current[song._id];
@@ -74,7 +83,6 @@ const DrawSong: React.FC<DrawSongProps> = ({ songs, onSongSelect }) => {
       if (newAudio) {
         newAudio.play();
         handleViewUpdate(song._id, song.views);
-
       }
       setPlayingSongId(song._id); // Play the new song
     }
@@ -85,12 +93,21 @@ const DrawSong: React.FC<DrawSongProps> = ({ songs, onSongSelect }) => {
     setIsModalOpen(true);
   };
 
-  const handleConfirmAddToPlaylist = () => {
+  const handleConfirmAddToPlaylist = async () => {
     if (selectedSong && selectedPlaylist) {
-      dispatch(addToPlaylist({ songId: selectedSong._id, playlistId: selectedPlaylist }));
+      await dispatch(addToPlaylist({ songId: selectedSong._id, playlistId: selectedPlaylist }));
+      await dispatch(fetchPlaylistEntries()); // Refresh playlist entries
       setIsModalOpen(false);
       setSelectedSong(null);
       setSelectedPlaylist('');
+    }
+  };
+
+  const handleCreatePlaylist = async () => {
+    if (newPlaylistName) {
+      await dispatch(createPlaylist(newPlaylistName));
+      await dispatch(fetchPlaylistEntries()); // Refresh playlist entries
+      setNewPlaylistName('');
     }
   };
 
@@ -106,8 +123,7 @@ const DrawSong: React.FC<DrawSongProps> = ({ songs, onSongSelect }) => {
               className={`song-card ${playingSongId === song._id ? 'playing' : ''}`}
             >
               <div className="image-container">
-              {song.imageUrl && <img src={song.imageUrl} alt={song.songName} className="song-image" />}
-
+                {song.imageUrl && <img src={song.imageUrl} alt={song.songName} className="song-image" />}
                 <IconButton
                   className="play-icon"
                   onClick={() => handleIconClick(song)}
@@ -147,20 +163,45 @@ const DrawSong: React.FC<DrawSongProps> = ({ songs, onSongSelect }) => {
           ))}
         </div>
       )}
-      {isModalOpen && (
-        <div className="modal">
-          <h4>בחר פלייליסט</h4>
-          <select value={selectedPlaylist} onChange={(e) => setSelectedPlaylist(e.target.value)}>
-            <option value="">בחר פלייליסט...</option>
+      <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <DialogTitle>בחר פלייליסט</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            בחר פלייליסט להוסיף את השיר או צור פלייליסט חדש.
+          </DialogContentText>
+          <select
+            value={selectedPlaylist}
+            onChange={(e) => setSelectedPlaylist(e.target.value)}
+            style={{ width: '100%', marginBottom: '16px' }}
+          >
+            <option value="">Select Playlist</option>
             {playlists.map((playlist) => (
               <option key={playlist._id} value={playlist._id}>{playlist.name}</option>
             ))}
           </select>
-          <button onClick={handleConfirmAddToPlaylist}>הוסף</button>
-          <button onClick={() => setIsModalOpen(false)}>ביטול</button>
-        </div>
-      )}
+          <TextField
+            label=" Enter new playlist name"
+            fullWidth
+            value={newPlaylistName}
+            onChange={(e) => setNewPlaylistName(e.target.value)}
+            variant="outlined"
+            margin="normal"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCreatePlaylist} color="primary">
+            Create Playlist
+          </Button>
+          <Button onClick={handleConfirmAddToPlaylist} color="primary">
+            ADD
+          </Button>
+          <Button onClick={() => setIsModalOpen(false)} color="secondary">
+            CANCEL
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
+
 export default DrawSong;
