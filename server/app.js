@@ -12,6 +12,10 @@ const playListsRouter = require('./src/routes/playLists');
 const chatHandler = require('./src/sockets/chat');
 const questionRouter = require('./src/routes/question');
 
+const logger = require('./src/middlewares/logger');
+const errorHandler = require('./src/middlewares/errorHandler');
+const authenticate = require('./src/middlewares/authenticate');
+
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
@@ -28,6 +32,8 @@ app.use(bodyParser.json());
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: true }));
 
+app.use(logger);
+
 app.use('/songs', express.static(path.join(__dirname, '..', 'client', 'songs')));
 app.use('/assets', express.static(path.join(__dirname, '..', 'client', 'assets'))); 
 
@@ -35,6 +41,12 @@ app.use('/api', usersRouter);
 app.use('/api', songsRouter);
 app.use('/api', playListsRouter);
 app.use('/api', questionRouter);
+
+app.use('/api/protected', authenticate, (req, res, next) => {
+    next();
+});
+
+app.use(errorHandler);
 
 const CONNECTION_URL = 'mongodb+srv://rachely-shulamit:HfaIUExXUCLK8qna@songify.1d3fhhe.mongodb.net/Songify?retryWrites=true&w=majority&appName=Songify';
 const PORT = process.env.PORT || 5000;
