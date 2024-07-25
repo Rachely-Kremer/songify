@@ -83,7 +83,6 @@ const SongComp: React.FC<SongCompProps> = ({ song }) => {
             autoPlayAfterSrcChange={true}
             autoPlay
           />
-          <button onClick={handleAddToPlaylist}>Add to Playlist</button>
           {isCreatingPlaylist && (
             <div>
               <input
@@ -95,14 +94,7 @@ const SongComp: React.FC<SongCompProps> = ({ song }) => {
               <button onClick={handleCreatePlaylist}>Create Playlist</button>
             </div>
           )}
-          {playlistEntries.length > 0 && (
-            <select onChange={(e) => setSelectedPlaylist(e.target.value)} value={selectedPlaylist}>
-              <option value="">Select Playlist</option>
-              {playlistEntries.map((playlist) => (
-                <option key={playlist._id} value={playlist._id}>{playlist.name}</option>
-              ))}
-            </select>
-          )}
+          
         </>
       ) : (
         <p>Failed to load songs.</p>
