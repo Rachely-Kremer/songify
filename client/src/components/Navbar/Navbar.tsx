@@ -33,7 +33,7 @@ import ChatComp from '../Chat/Chat';
 const drawerWidth = 240;
 
 const openedMixin = (theme: Theme): CSSObject => ({
-  width: drawerWidth,
+  // width: drawerWidth,
   transition: theme.transitions.create('width', {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.enteringScreen,
@@ -78,23 +78,21 @@ const AppBar = styled(MuiAppBar, {
     duration: theme.transitions.duration.leavingScreen,
   }),
   ...(open && {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(['width', 'margin'], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
+    // marginLeft: drawerWidth,
+    // width: `calc(100% - ${drawerWidth}px)`,
+    // transition: theme.transitions.create(['width', 'margin'], {
+    //   easing: theme.transitions.easing.sharp,
+    //   duration: theme.transitions.duration.enteringScreen,
+    // }),
   }),
 }));
 
 const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }) => ({
-    width: drawerWidth,
+    // width: drawerWidth,
     flexShrink: 0,
     whiteSpace: 'nowrap',
     boxSizing: 'border-box',
-    backgroundColor: 'inherit', // Ensure the background color matches parent
-    color: 'inherit', // Ensure the text color matches parent
     ...(open && {
       ...openedMixin(theme),
       '& .MuiDrawer-paper': openedMixin(theme),
@@ -130,7 +128,7 @@ const PopularComponentMemo = React.memo(Popular);
 
 export default function MiniDrawer() {
   const theme = useTheme();
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(true); // Set default to open
   const [currentComponent, setCurrentComponent] = React.useState<IconName>('Home');
   const navigate = useNavigate();
 

@@ -1,17 +1,10 @@
-/* navbar.css */
+/* /* navbar.css
 .MuiDrawer-paper {
     background-color: inherit;
-    /* Ensure the background color matches parent */
     color: inherit;
-    /* Ensure the text color matches parent */
 }
 
 .MuiListItemButton-root {
     color: inherit;
-    /* Ensure the text color matches parent */
-}
+} */
 
-.css-ujpi53-MuiDrawer-docked {
-    background-color: transparent !important; /* הסרה של רקע אפור */
-    box-shadow: none !important; /* הסרה של הצללה */
-}
