@@ -1,63 +1,90 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import AudioPlayer from 'react-h5-audio-player';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import 'react-h5-audio-player/lib/styles.css';
-import { fetchSongs } from '../../Redux/songSlice';
-import { RootState, AppDispatch } from '../../Redux/store';
-import './styles.css';
+import { Song } from '../../Types/song.type';
 import { updateView } from '../../Redux/songSlice';
-import DrawSong from './DrawSong';
+import { AppDispatch } from '../../Redux/store';
+import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
+import PauseCircleOutlineIcon from '@mui/icons-material/PauseCircleOutline';
+import IconButton from '@mui/material/IconButton';
+import './styles.css';
 
-const SongComp = () => {
+interface SongCompProps {
+  song: Song;
+
+}
+
+const SongComp: React.FC<SongCompProps> = ({ song }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const songs = useSelector((state: RootState) => state.songs.songs);
-  const songStatus = useSelector((state: RootState) => state.songs.status);
-  const [currentSongIndex, setCurrentSongIndex] = useState(0);
+  const [playingSongId, setPlayingSongId] = useState<string | null>(null);
+  const [localViews, setLocalViews] = useState<number>(song.views);
+  const isFirstPlayRef = useRef<boolean>(true);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
-  useEffect(() => {
-    if (songStatus === 'idle') {
-      dispatch(fetchSongs());
-    }
-  }, [songStatus, dispatch]);
 
-  const handleClickNext = () => {
-    setCurrentSongIndex((prevIndex) => (prevIndex + 1) % songs.length);
-  };
-
-  const handleClickPrevious = () => {
-    setCurrentSongIndex((prevIndex) => (prevIndex - 1 + songs.length) % songs.length);
-  };
-
-  const handlePlay = async (songId: string, views: number) => {
+  const handleViewUpdate = async (songId: string, views: number) => {
     try {
-      console.log(`Playing song: ${songId} with current views: ${views}`);
+      console.log(`Updating view for song ${songId} to ${views + 1}`);
       await dispatch(updateView({ id: songId, view: views + 1 })).unwrap();
+      setLocalViews(views + 1); // Update local views state
     } catch (error) {
       console.error('Error updating views:', error);
     }
   };
 
+
+  useEffect(() => {
+    if (isFirstPlayRef.current) {
+      handleViewUpdate(song._id, song.views);
+      isFirstPlayRef.current = false;
+    }
+  }, [song._id, song.views]);
+
+
+  const handlePlayPause = () => {
+    setIsPlaying((prev) => !prev);
+    console.log(`${isPlaying ? 'Pausing' : 'Playing'} song: ${song._id}`);
+  };
+  // const handlePlay = () => {
+  //   console.log(`Playing song: ${song._id}`);
+  // };
+
+  // const handlePause = () => {
+  //   console.log(`Pausing song: ${song._id}`);
+  // };
+
+  // const handlePause = async (songId: string, views: number) => {
+  //   try {
+  //     console.log(`Pausing song: ${songId} with current views: ${views}`);
+  //     await dispatch(updateView({ id: songId, view: views })).unwrap();
+  //   } catch (error) {
+  //     console.error('Error updating views:', error);
+  //   }
+  // };
+
   return (
     <div className="song-container">
-      {songStatus === 'loading' ? (
-        <p>Loading songs...</p>
-      ) : songStatus === 'succeeded' ? (
-        <>
-          <h4>{songs[currentSongIndex].songName}</h4>
-          <AudioPlayer
-            src={songs[currentSongIndex].songUrl}
-            onPlay={() => handlePlay(songs[currentSongIndex]._id, songs[currentSongIndex].views + 1)}
-            onClickPrevious={handleClickPrevious}
-            onClickNext={handleClickNext}
-            showSkipControls={true}
-            showJumpControls={false}
-            autoPlayAfterSrcChange={true}
-          />
-          <DrawSong songs={songs} />
-        </>
-      ) : songStatus === 'failed' ? (
-        <p>Error fetching songs...</p>
-      ) : null}
+      {/* <h4>{song.songName}</h4> */}
+      {/* <p className="song-artist">{song.singerName}</p> */}
+      <AudioPlayer
+        src={song.songUrl}
+        onPlay={handlePlayPause}
+        onPause={handlePlayPause}
+        // onPlay={() => {
+        //   setPlayingSongId(song._id);
+        //   handleViewUpdate(song._id, localViews);
+        // }}
+        // onPause={() => {
+        //   setPlayingSongId(null);
+        //   handlePause(song._id, localViews);
+        // }}
+        showSkipControls={true}
+        showJumpControls={false}
+        autoPlayAfterSrcChange={true}
+        autoPlay
+      />
+
     </div>
   );
 };

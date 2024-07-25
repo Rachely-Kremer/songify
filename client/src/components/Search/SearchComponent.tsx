@@ -4,6 +4,7 @@ import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
 import { Song } from '../../Types/song.type';
 import DrawSong from '../Song/DrawSong';
+import SongComp from '../Song/SongComp';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -51,14 +52,13 @@ const SearchComponent: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [searched, setSearched] = useState<boolean>(false); // State to track if search has been performed
   const [initialLoad, setInitialLoad] = useState<boolean>(true); // State to track initial load
-
+  const [selectedSong, setSelectedSong] = useState<Song | null>(null);
 
   const handleInputChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
     setSearched(false);
     setInitialLoad(false);
   }, []);
-
 
   const handleSearch = useCallback(async () => {
     if (searchQuery.trim() === '') {
@@ -87,7 +87,6 @@ const SearchComponent: React.FC = () => {
 
   }, [searchQuery]);
 
-
   useEffect(() => {
     const timer = setTimeout(() => {
       handleSearch();
@@ -96,12 +95,15 @@ const SearchComponent: React.FC = () => {
     return () => clearTimeout(timer);
   }, [searchQuery, handleSearch]);
 
-
   const handleKeyPress = useCallback((event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       handleSearch();
     }
   }, [handleSearch]);
+
+  const handleSongSelect = (song: Song) => {
+    setSelectedSong(song);
+  };
 
   return (
     <div>
@@ -121,7 +123,8 @@ const SearchComponent: React.FC = () => {
         {searched && searchResults.length === 0 && (
           <p>No results found for "{searchQuery}". Try searching within quotes.</p>
         )}
-        {searched && <DrawSong songs={searchResults} />}
+        {searched && <DrawSong songs={searchResults} onSongSelect={handleSongSelect} />}
+        {selectedSong && <SongComp song={selectedSong} />}
       </div>
     </div>
   );
