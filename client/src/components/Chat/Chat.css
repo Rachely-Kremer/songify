@@ -5,7 +5,7 @@ body {
 }
 
 #form {
-  background: rgba(0, 0, 0, 0.15);
+  background-color: #121212; /* אפור כהה לרקע */
   padding: 0.3rem; /* Increase padding for more space */
   position: fixed;
   bottom: 0;
@@ -21,11 +21,12 @@ body {
 #input {
   border: none;
   padding: 0.3rem; /* Increase padding for more space */
-  border-radius: 2rem;
+  border-radius: 5px;
   flex-grow: 1; /* Allow input to grow and fill available space */
-  max-width: 80%; /* Allow input to take full width of the form */
-  margin-left: 70px; /* Add margin to the right of the input */
-  height: 2.2rem; /* Increase height */
+  max-width: 90%; /* Allow input to take full width of the form */
+  margin-left: 250px; /* Add margin to the right of the input */
+  margin-right: 10px;
+  height: 2.8rem; /* Increase height */
 }
 
 #input:focus {
@@ -33,13 +34,13 @@ body {
 }
 
 #form > button {
-  background: #333;
+  background-color: #1DB954; /* צבע ירוק לתשובה נכונה */
   border: none;
   padding: 0.3rem 2rem; /* Increase padding for more space */
-  border-radius: 3px;
+  border-radius: 5px;
   outline: none;
   color: #fff;
-  height: 3rem; /* Match height with the input */
+  height: 2.8rem; /* Match height with the input */
 }
 
 #messages {
@@ -53,14 +54,27 @@ body {
   padding: 8px;
   margin-bottom: 10px;
   word-break: break-word; /* Prevent long words from breaking layout */
+  background-color: #121212; /* אפור כהה לרקע */
+  color: #FFFFFF; /* טקסט בצבע לבן */
+  border-radius: 10px; /* גבולות מעוגלים */
 }
 
 #messages li.question {
   text-align: right; /* Align questions to the right */
-  background-color: #f1f1f1;
+  color: #FFFFFF; /* טקסט בצבע לבן */
   border-radius: 10px;
   max-width: 400px; /* Restrict width of questions */
   margin-left: auto; /* Align questions to the right */
+}
+
+#messages li.answer.correct {
+  background-color: #1DB954; /* צבע ירוק לתשובה נכונה */
+  color: #FFFFFF; /* טקסט בצבע לבן */
+}
+
+#messages li.answer.incorrect {
+  background-color: #b71a39; /* צבע אדום לתשובה שגויה */
+  color: #FFFFFF; /* טקסט בצבע לבן */
 }
 
 #messages li.answer {
@@ -70,13 +84,6 @@ body {
   margin-right: auto; /* Align answers to the left */
 }
 
-#messages li.answer.correct {
-  background-color: #d1ffd1;
-}
-
-#messages li.answer.incorrect {
-  background-color: #ffd1d1;
-}
 
 .winner {
   font-weight: bold;
@@ -98,6 +105,8 @@ body {
   padding: 1rem;
   background: #f1f1f1;
   border-radius: 10px;
+  background-color: #121212; /* אפור כהה לרקע */
+
 }
 
 .answer-options {
