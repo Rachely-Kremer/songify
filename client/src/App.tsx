@@ -1,12 +1,13 @@
 import React, { Suspense, useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import MiniDrawer from './components/Navbar/Navbar';
-import { AppBar, Box, Toolbar } from '@mui/material';
+import { CssBaseline, Box, ThemeProvider, Toolbar, Container } from '@mui/material';
 import Login from './components/Login/Login';
 import store from './Redux/store';
 import { Provider } from 'react-redux';
 import SignUp from './components/SignUp/SignUp';
 import Profile from './components/Profile/Profile';
+import theme from './Theme';
 
 
 function App() {
@@ -48,17 +49,23 @@ function App() {
 
 
   return (
-    <Provider store={store}>
-      <Router>
-        <Toolbar>
-          <Box sx={{ flexGrow: 1 }} />
-          {isLoggedIn && <Profile />}
-        </Toolbar>
-        <MiniDrawer />
-        <Login onOpenSignUp={handleOpenSignUp} openDialog={openDialog} onCloseDialog={handleCloseDialog} onLoginSuccess={handleLoginSuccess} />
-        <SignUp onOpenLogin={handleOpenLogin} openDialog={openDialog} onCloseDialog={handleCloseDialog} onSignUpSuccess={handleSignUpSuccess} />
-      </Router>
-    </Provider>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Provider store={store}>
+        <Router>
+          <Toolbar>
+            <Box sx={{ flexGrow: 1 }} />
+            {isLoggedIn && <Profile />}
+          </Toolbar>
+          <Container maxWidth="md" sx={{ padding: 2 }}>
+            <MiniDrawer />
+            <Login onOpenSignUp={handleOpenSignUp} openDialog={openDialog} onCloseDialog={handleCloseDialog} onLoginSuccess={handleLoginSuccess} />
+            <SignUp onOpenLogin={handleOpenLogin} openDialog={openDialog} onCloseDialog={handleCloseDialog} onSignUpSuccess={handleSignUpSuccess} />
+          </Container>
+        </Router>
+      </Provider>
+    </ThemeProvider>
+
   );
 }
 

@@ -200,9 +200,6 @@ const SongComp: React.FC<SongCompProps> = ({ song }) => {
       ) : (
         <p>Failed to load songs.</p>
       )}
->>>>>>> 98a23d60705c94fed81fda3e4852a01723ffdf45
     </div> */}
-
-
   }
   export default SongComp;
