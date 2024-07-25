@@ -22,7 +22,6 @@ const HomeComp = () => {
 
     return (
         <div className="home-container">
-            <h1>.שמע את זה. רואים את זה. חיה את זה</h1>
             <DrawSong songs={songs} onSongSelect={handleSongSelect} />
             {selectedSong && <SongComp song={selectedSong} />}
         </div>

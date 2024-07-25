@@ -46,6 +46,15 @@ export const createPlaylist = createAsyncThunk('playlists/createPlaylist', async
     return thunkAPI.rejectWithValue(axiosError.message);
   }
 });
+export const removeFromPlaylist = createAsyncThunk('playlists/removeFromPlaylist', async ({ songId, playlistId }: { songId: string, playlistId: string }, { rejectWithValue }) => {
+  try {
+    await axios.delete(`http://localhost:5000/api/playlist/${playlistId}/${songId}`);
+    return { songId, playlistId };
+  } catch (error) {
+    const axiosError = error as AxiosError;
+    return rejectWithValue(axiosError.message);
+  }
+});
 
 const playlistSlice = createSlice({
   name: 'playlist',
@@ -89,8 +98,23 @@ const playlistSlice = createSlice({
       .addCase(createPlaylist.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
-      });
-  },
+      })
+      .addCase(removeFromPlaylist.pending, (state) => {
+        state.loading = true;
+      })
+    .addCase(removeFromPlaylist.fulfilled, (state, action: PayloadAction<{ songId: string, playlistId: string }>) => {
+      state.loading = false;
+      const { songId, playlistId } = action.payload;
+      const playlist = state.playlistEntries.find(p => p._id === playlistId);
+      if (playlist) {
+        playlist.songs = playlist.songs.filter(song => song._id !== songId);
+      }
+    })
+    .addCase(removeFromPlaylist.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload as string;
+    });
+},
 });
 
 export default playlistSlice.reducer;
