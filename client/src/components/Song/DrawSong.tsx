@@ -16,7 +16,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { updateView, updateLike, fetchSongs } from '../../Redux/songSlice';
-import { addToPlaylist, createPlaylist, fetchPlaylistEntries } from '../../Redux/playlistSlice';
+import { addToPlaylist, createPlaylist, fetchPlaylistEntries, removeFromPlaylist } from '../../Redux/playlistSlice';
 import { Song } from '../../Types/song.type';
 import { RootState, AppDispatch } from '../../Redux/store';
 import './styles.css';
@@ -96,7 +96,7 @@ const DrawSong: React.FC<DrawSongProps> = ({ songs, onSongSelect, showRemoveButt
   };
 
   const handleRemoveFromPlaylist = async (songId: string, playlistId: string) => {
-    // await dispatch(removeFromPlaylist({ songId, playlistId }));
+    await dispatch(removeFromPlaylist({ songId, playlistId }));
     await dispatch(fetchPlaylistEntries()); // Refresh playlist entries
   };
 

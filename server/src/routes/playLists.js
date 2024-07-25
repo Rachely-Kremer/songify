@@ -19,6 +19,6 @@ router.put('/playlist/:id', playlistController.updatePlaylistEntry);
 
 // Delete a playlist entry by ID
 router.delete('/playlist/:id', playlistController.deletePlaylistEntry);
-
+router.delete('/playlist/:id',playlistController.removeSongFromPlaylist)
 
 module.exports = router;

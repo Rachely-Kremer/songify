@@ -42,7 +42,7 @@ const SongComp: React.FC<SongCompProps> = ({ song }) => {
 
   const handleAddToPlaylist = () => {
     if (selectedPlaylist) {
-      dispatch(addToPlaylist({ songId: songs[currentSongIndex]._id, playlistId: selectedPlaylist }));
+      dispatch(addToPlaylist({ songId: song._id, playlistId: selectedPlaylist }));
     } else {
       setIsCreatingPlaylist(true);
     }
@@ -108,6 +108,9 @@ const SongComp: React.FC<SongCompProps> = ({ song }) => {
         <p>Failed to load songs.</p>
       )}
     </div>
-  )
-}
+
+
+  );
+};
+
 export default SongComp;
