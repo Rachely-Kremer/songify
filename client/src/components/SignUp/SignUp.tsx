@@ -3,7 +3,7 @@ import {
     Avatar, Button, CssBaseline, TextField,
     FormControlLabel, Checkbox, Grid, Box,
     Typography, Container,
-    createTheme, ThemeProvider, Dialog,
+    ThemeProvider, Dialog,
     InputAdornment,
     IconButton
 } from '@mui/material';
@@ -13,8 +13,7 @@ import { signUpUser } from '../../Redux/authSlice';
 import { User } from '../../Types/user.type';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { Link as RouterLink } from 'react-router-dom';
-
-const defaultTheme = createTheme();
+import theme from '../../Theme'; // Import the theme
 
 interface SignUpProps {
     onOpenLogin: () => void;
@@ -93,128 +92,177 @@ const SignUp: React.FC<SignUpProps> = ({ onOpenLogin, openDialog, onCloseDialog,
     };
 
     return (
-        <React.Fragment>
+        <ThemeProvider theme={theme}>
             <Dialog 
             open={openDialog === 'signup'} 
             onClose={handleClose}
             disableEscapeKeyDown
             BackdropProps={{ invisible: true }}
             >
-                <ThemeProvider theme={defaultTheme}>
-                    <Container component="main" maxWidth="xs">
-                        <CssBaseline />
-                        <Box
-                            sx={{
-                                marginTop: 8,
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                            }}
-                        >
-                            <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }} />
-                            <Typography component="h1" variant="h5">
+                <Container component="main" maxWidth="xs">
+                    <CssBaseline />
+                    <Box
+                        sx={{
+                            marginTop: 8,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            bgcolor: theme.palette.background.paper, // צבע הרקע של הקונטיינר לפי ה-theme
+                            padding: 3,
+                            borderRadius: 1,
+                        }}
+                    >
+                        <Avatar sx={{ m: 1, bgcolor: theme.palette.primary.main }} />
+                        <Typography component="h1" variant="h5" color={theme.palette.text.primary}>
+                            Sign Up
+                        </Typography>
+                        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+                            <Grid container spacing={2}>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        autoComplete="given-name"
+                                        name="firstName"
+                                        required
+                                        fullWidth
+                                        id="firstName"
+                                        label="First Name"
+                                        autoFocus
+                                        error={!!errors.firstName}
+                                        helperText={errors.firstName}
+                                        InputProps={{
+                                            sx: {
+                                                bgcolor: 'transparent', // צבע הרקע שקוף
+                                                color: theme.palette.text.primary, // צבע טקסט לפי ה-theme
+                                                border: '1px solid #333333', // צבע המסגרת אפור כהה יותר
+                                                borderRadius: 1, // קצה מעוגל למסגרת
+                                                '& .MuiInputBase-input': {
+                                                    padding: '10px', // ריפוד פנימי
+                                                }
+                                            }
+                                        }}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        required
+                                        fullWidth
+                                        id="lastName"
+                                        label="Last Name"
+                                        name="lastName"
+                                        autoComplete="family-name"
+                                        error={!!errors.lastName}
+                                        helperText={errors.lastName}
+                                        InputProps={{
+                                            sx: {
+                                                bgcolor: 'transparent', // צבע הרקע שקוף
+                                                color: theme.palette.text.primary, // צבע טקסט לפי ה-theme
+                                                border: '1px solid #333333', // צבע המסגרת אפור כהה יותר
+                                                borderRadius: 1, // קצה מעוגל למסגרת
+                                                '& .MuiInputBase-input': {
+                                                    padding: '10px', // ריפוד פנימי
+                                                }
+                                            }
+                                        }}
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        required
+                                        fullWidth
+                                        id="email"
+                                        label="Email Address"
+                                        name="email"
+                                        autoComplete="email"
+                                        error={!!errors.email}
+                                        helperText={errors.email}
+                                        InputProps={{
+                                            sx: {
+                                                bgcolor: 'transparent', // צבע הרקע שקוף
+                                                color: theme.palette.text.primary, // צבע טקסט לפי ה-theme
+                                                border: '1px solid #333333', // צבע המסגרת אפור כהה יותר
+                                                borderRadius: 1, // קצה מעוגל למסגרת
+                                                '& .MuiInputBase-input': {
+                                                    padding: '10px', // ריפוד פנימי
+                                                }
+                                            }
+                                        }}
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        required
+                                        fullWidth
+                                        name="password"
+                                        label="Password"
+                                        type={showPassword ? 'text' : 'password'}
+                                        id="password"
+                                        autoComplete="new-password"
+                                        error={!!errors.password}
+                                        helperText={errors.password}
+                                        InputProps={{
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        aria-label="toggle password visibility"
+                                                        onClick={handleClickShowPassword}
+                                                        edge="end"
+                                                        sx={{ color: theme.palette.primary.main }} // צבע האיקון ירוק
+                                                    >
+                                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ),
+                                            sx: {
+                                                bgcolor: 'transparent', // צבע הרקע שקוף
+                                                color: theme.palette.text.primary, // צבע טקסט לפי ה-theme
+                                                border: '1px solid #333333', // צבע המסגרת אפור כהה יותר
+                                                borderRadius: 1, // קצה מעוגל למסגרת
+                                                '& .MuiInputBase-input': {
+                                                    padding: '10px', // ריפוד פנימי
+                                                }
+                                            }
+                                        }}
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <FormControlLabel
+                                        control={<Checkbox value="allowExtraEmails" color="primary" />}
+                                        label="I want to receive inspiration, marketing promotions and updates via email."
+                                        sx={{ color: theme.palette.text.primary }} // צבע טקסט לפי ה-theme
+                                    />
+                                </Grid>
+                            </Grid>
+                            {generalError && (
+                                <Typography color="error" align="center">
+                                    {generalError}
+                                </Typography>
+                            )}
+                            <Button
+                                type="submit"
+                                fullWidth
+                                variant="contained"
+                                sx={{ mt: 3, mb: 2 }}
+                            >
                                 Sign Up
-                            </Typography>
-                            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
-                                <Grid container spacing={2}>
-                                    <Grid item xs={12} sm={6}>
-                                        <TextField
-                                            autoComplete="given-name"
-                                            name="firstName"
-                                            required
-                                            fullWidth
-                                            id="firstName"
-                                            label="First Name"
-                                            autoFocus
-                                            error={!!errors.firstName}
-                                            helperText={errors.firstName}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12} sm={6}>
-                                        <TextField
-                                            required
-                                            fullWidth
-                                            id="lastName"
-                                            label="Last Name"
-                                            name="lastName"
-                                            autoComplete="family-name"
-                                            error={!!errors.lastName}
-                                            helperText={errors.lastName}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <TextField
-                                            required
-                                            fullWidth
-                                            id="email"
-                                            label="Email Address"
-                                            name="email"
-                                            autoComplete="email"
-                                            error={!!errors.email}
-                                            helperText={errors.email}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <TextField
-                                            required
-                                            fullWidth
-                                            name="password"
-                                            label="Password"
-                                            type={showPassword ? 'text' : 'password'}
-                                            id="password"
-                                            autoComplete="new-password"
-                                            error={!!errors.password}
-                                            helperText={errors.password}
-                                            InputProps={{
-                                                endAdornment: (
-                                                    <InputAdornment position="end">
-                                                        <IconButton
-                                                            aria-label="toggle password visibility"
-                                                            onClick={handleClickShowPassword}
-                                                            edge="end"
-                                                        >
-                                                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                                                        </IconButton>
-                                                    </InputAdornment>
-                                                ),
-                                            }}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <FormControlLabel
-                                            control={<Checkbox value="allowExtraEmails" color="primary" />}
-                                            label="I want to receive inspiration, marketing promotions and updates via email."
-                                        />
-                                    </Grid>
-                                </Grid>
-                                {generalError && (
-                                    <Typography color="error" align="center">
-                                        {generalError}
+                            </Button>
+                            <Grid container justifyContent="flex-end">
+                                <Grid item>
+                                    <Typography variant="body2">
+                                        <RouterLink
+                                            to="/login"
+                                            onClick={onOpenLogin}
+                                            style={{ color: theme.palette.text.primary }}
+                                        >
+                                            Already have an account? Login
+                                        </RouterLink>
                                     </Typography>
-                                )}
-                                <Button
-                                    type="submit"
-                                    fullWidth
-                                    variant="contained"
-                                    sx={{ mt: 3, mb: 2 }}
-                                >
-                                    Sign Up
-                                </Button>
-                                <Grid container justifyContent="flex-end">
-                                    <Grid item>
-                                        <Typography variant="body2">
-                                            <RouterLink to="/login" onClick={onOpenLogin}>
-                                                Already have an account? Login
-                                            </RouterLink>
-                                        </Typography>
-                                    </Grid>
                                 </Grid>
-                            </Box>
+                            </Grid>
                         </Box>
-                    </Container>
-                </ThemeProvider>
+                    </Box>
+                </Container>
             </Dialog>
-        </React.Fragment>
+        </ThemeProvider>
     );
 }
 
