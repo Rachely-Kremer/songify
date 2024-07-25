@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../Redux/store';
-import { signUpUser } from '../../Redux/userSlice';
+import { signUpUser } from '../../Redux/authSlice';
 import { User } from '../../Types/user.type';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { Link as RouterLink } from 'react-router-dom';

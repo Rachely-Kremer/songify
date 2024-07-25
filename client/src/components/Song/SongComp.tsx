@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import AudioPlayer from 'react-h5-audio-player';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import 'react-h5-audio-player/lib/styles.css';
-import { Song } from '../../Types/song.type';
-import { updateView } from '../../Redux/songSlice';
-import { AppDispatch } from '../../Redux/store';
+import { addToPlaylist, createPlaylist, fetchPlaylistEntries } from '../../Redux/playlistSlice';
+import { fetchSongs, updateView } from '../../Redux/songSlice';
+import { RootState, AppDispatch } from '../../Redux/store';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import PauseCircleOutlineIcon from '@mui/icons-material/PauseCircleOutline';
 import IconButton from '@mui/material/IconButton';
 import './styles.css';
+import { Song } from '../../Types/song.type';
+
 
 interface SongCompProps {
   song: Song;
@@ -17,10 +19,25 @@ interface SongCompProps {
 
 const SongComp: React.FC<SongCompProps> = ({ song }) => {
   const dispatch = useDispatch<AppDispatch>();
+  const songs = useSelector((state: RootState) => state.songs.songs);
+  const songStatus = useSelector((state: RootState) => state.songs.status);
+  const playlistEntries = useSelector((state: RootState) => state.playlist.playlistEntries);
+  const loading = useSelector((state: RootState) => state.songs.loading);
+
   const [playingSongId, setPlayingSongId] = useState<string | null>(null);
   const [localViews, setLocalViews] = useState<number>(song.views);
   const isFirstPlayRef = useRef<boolean>(true);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+
+  const [currentSongIndex, setCurrentSongIndex] = useState(0);
+  const [selectedPlaylist, setSelectedPlaylist] = useState<string>('');
+  const [newPlaylistName, setNewPlaylistName] = useState<string>('');
+  const [isCreatingPlaylist, setIsCreatingPlaylist] = useState<boolean>(false);
+
+  useEffect(() => {
+    dispatch(fetchSongs());
+    dispatch(fetchPlaylistEntries());
+  }, [dispatch]);
 
 
   const handleViewUpdate = async (songId: string, views: number) => {
@@ -33,6 +50,32 @@ const SongComp: React.FC<SongCompProps> = ({ song }) => {
     }
   };
 
+  const handlePlay = async (songId: string, views: number) => {
+    try {
+      await handleViewUpdate(songId, views);
+      setPlayingSongId(songId);
+      setIsPlaying(true);
+    } catch (error) {
+      console.error('Error playing song:', error);
+    }
+  };
+
+  const handleAddToPlaylist = () => {
+    if (selectedPlaylist) {
+      dispatch(addToPlaylist({ songId: songs[currentSongIndex]._id, playlistId: selectedPlaylist }));
+    } else {
+      setIsCreatingPlaylist(true);
+    }
+  };
+
+  const handleCreatePlaylist = () => {
+    if (newPlaylistName) {
+      dispatch(createPlaylist(newPlaylistName));
+      setNewPlaylistName('');
+      setIsCreatingPlaylist(false);
+    }
+  };
+
 
   useEffect(() => {
     if (isFirstPlayRef.current) {
@@ -40,6 +83,8 @@ const SongComp: React.FC<SongCompProps> = ({ song }) => {
       isFirstPlayRef.current = false;
     }
   }, [song._id, song.views]);
+
+
 
 
   const handlePlayPause = () => {
@@ -65,28 +110,99 @@ const SongComp: React.FC<SongCompProps> = ({ song }) => {
 
   return (
     <div className="song-container">
-      {/* <h4>{song.songName}</h4> */}
-      {/* <p className="song-artist">{song.singerName}</p> */}
-      <AudioPlayer
-        src={song.songUrl}
-        onPlay={handlePlayPause}
-        onPause={handlePlayPause}
-        // onPlay={() => {
-        //   setPlayingSongId(song._id);
-        //   handleViewUpdate(song._id, localViews);
-        // }}
-        // onPause={() => {
-        //   setPlayingSongId(null);
-        //   handlePause(song._id, localViews);
-        // }}
-        showSkipControls={true}
-        showJumpControls={false}
-        autoPlayAfterSrcChange={true}
-        autoPlay
-      />
+      {songStatus === 'loading' ? (
+        <p>Loading songs...</p>
+      ) : songStatus === 'succeeded' ? (
 
+        <>
+          <h4>{songs[currentSongIndex]?.songName || 'No Song Selected'}</h4>
+
+          <AudioPlayer
+            src={song.songUrl}
+            onPlay={handlePlayPause}
+            onPause={handlePlayPause}
+            // onPlay={() => {
+            //   setPlayingSongId(song._id);
+            //   handleViewUpdate(song._id, localViews);
+            // }}
+            // onPause={() => {
+            //   setPlayingSongId(null);
+            //   handlePause(song._id, localViews);
+            // }}
+            showSkipControls={true}
+            showJumpControls={false}
+            autoPlayAfterSrcChange={true}
+            autoPlay
+          />
+          <button onClick={handleAddToPlaylist}>Add to Playlist</button>
+          {isCreatingPlaylist && (
+            <div>
+              <input
+                type="text"
+                value={newPlaylistName}
+                onChange={(e) => setNewPlaylistName(e.target.value)}
+                placeholder="Enter new playlist name"
+              />
+              <button onClick={handleCreatePlaylist}>Create Playlist</button>
+            </div>
+          )}
+          {playlistEntries.length > 0 && (
+            <select onChange={(e) => setSelectedPlaylist(e.target.value)} value={selectedPlaylist}>
+              <option value="">Select Playlist</option>
+              {playlistEntries.map((playlist) => (
+                <option key={playlist._id} value={playlist._id}>{playlist.name}</option>
+              ))}
+            </select>
+          )}
+        </>
+      ) : (
+        <p>Failed to load songs.</p>
+      )}
+      
     </div>
-  );
-};
+  )
+  {/* {songStatus === 'loading' ? (
+        <p>Loading songs...</p>
+      ) : songStatus === 'succeeded' ? (
+        <>
+          <h4>{songs[currentSongIndex]?.songName || 'No Song Selected'}</h4>
+          <AudioPlayer
+            src={songs[currentSongIndex]?.songUrl || ''}
+            onPlay={() => handlePlay(songs[currentSongIndex]._id, songs[currentSongIndex].views + 1)}
+            onClickPrevious={handleClickPrevious}
+            onClickNext={handleClickNext}
+            showSkipControls={true}
+            showJumpControls={false}
+            autoPlayAfterSrcChange={true}
+          />
+          <button onClick={handleAddToPlaylist}>Add to Playlist</button>
+          {isCreatingPlaylist && (
+            <div>
+              <input
+                type="text"
+                value={newPlaylistName}
+                onChange={(e) => setNewPlaylistName(e.target.value)}
+                placeholder="Enter new playlist name"
+              />
+              <button onClick={handleCreatePlaylist}>Create Playlist</button>
+            </div>
+          )}
+          {playlistEntries.length > 0 && (
+            <select onChange={(e) => setSelectedPlaylist(e.target.value)} value={selectedPlaylist}>
+              <option value="">Select Playlist</option>
+              {playlistEntries.map((playlist) => (
+                <option key={playlist._id} value={playlist._id}>{playlist.name}</option>
+              ))}
+            </select>
+          )}
+          <DrawSong songs={songs} />
+        </>
+      ) : (
+        <p>Failed to load songs.</p>
+      )}
+>>>>>>> 98a23d60705c94fed81fda3e4852a01723ffdf45
+    </div> */}
 
-export default SongComp;
+
+  }
+  export default SongComp;
