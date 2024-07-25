@@ -128,7 +128,10 @@ const Chat: React.FC = () => {
       {waiting && <p>{waiting}</p>}
       <ul id="messages">
         {messages.map((message, index) => (
-          <li key={index} className={message.type} style={{ backgroundColor: message.type === 'answer' ? (message.isCorrect ? '#d1ffd1' : '#ffd1d1') : undefined }}>
+          <li
+            key={index}
+            className={`${message.type} ${message.type === 'answer' ? (message.isCorrect ? 'correct' : 'incorrect') : ''}`}
+          >
             {message.user ? `${message.user.firstName} ${message.user.lastName}: ` : ''}{message.msg}
           </li>
         ))}

@@ -14,16 +14,16 @@ const theme = createTheme({
             secondary: '#B3B3B3', // טקסט בצבע אפור
         },
     },
-    components: {
-        MuiCssBaseline: {
-            styleOverrides: {
-                body: {
-                    backgroundColor: '#000000',
-                },
-            },
-        },
-    },
-    spacing: 8, // מרווחים בין רכיבים
+    // components: {
+    //     MuiCssBaseline: {
+    //         styleOverrides: {
+    //             body: {
+    //                 backgroundColor: '#000000',
+    //             },
+    //         },
+    //     },
+    // },
+    // spacing: 8, // מרווחים בין רכיבים
 });
 
 export default theme;
